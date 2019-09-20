@@ -3,7 +3,7 @@ import numpy as np
 class Conv3x3:
     def __init__(self,num_filt):
         self.num_filt = num_filt
-        self.filters = np.random.randn(self.num_filt,3,3)/9
+        self.filters = np.random.randn(self.num_filt,3,3)/9 # replace this with Sobel filter
 
     def iter_regions(self,img):
         h,w = img.shape
