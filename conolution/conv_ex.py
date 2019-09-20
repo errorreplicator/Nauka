@@ -3,7 +3,10 @@ import numpy as np
 class Conv3x3:
     def __init__(self,num_filt):
         self.num_filt = num_filt
-        self.filters = np.random.randn(self.num_filt,3,3)/9 # replace this with Sobel filter
+        self.filter = np.random.randn(self.num_filt,3,3)/9 # random filter
+        print('calling constructor')
+        # self.filter = np.array([[1, 2, 1], [0, 0, 0], [-1, -2, -1]]).reshape(1, 3, 3)  # Sobel filter horizontal
+        # self.filter = np.array([[-1, 0, 1],[-2, 0, 2],[-1, 0, -1]]).reshape(1, 3, 3) # Sobel filter vertical
 
     def iter_regions(self,img):
         h,w = img.shape
@@ -17,7 +20,7 @@ class Conv3x3:
         output = np.zeros((h-2,w-2,self.num_filt))
 
         for img_region, y,x in self.iter_regions(input):
-            output[y,x] = np.sum(img_region * self.filters, axis=(1,2))
+            output[y,x] = np.sum(img_region * self.filter, axis=(1,2))
 
         return output
 
