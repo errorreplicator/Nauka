@@ -4,7 +4,6 @@ class Conv3x3:
     def __init__(self,num_filt):
         self.num_filt = num_filt
         self.filter = np.random.randn(self.num_filt,3,3)/9 # random filter
-        print('calling constructor')
         # self.filter = np.array([[1, 2, 1], [0, 0, 0], [-1, -2, -1]]).reshape(1, 3, 3)  # Sobel filter horizontal
         # self.filter = np.array([[-1, 0, 1],[-2, 0, 2],[-1, 0, -1]]).reshape(1, 3, 3) # Sobel filter vertical
 

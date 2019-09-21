@@ -1,30 +1,24 @@
 import numpy as np
-from PIL import Image
-from matplotlib import pyplot as plt
 
-# img = Image.open('c:/Dataset/44.jpg').convert('L')
-# img = np.asarray(img)
-# print(img.shape)
-zm1 = np.random.randn(4,4)/9
-zm2 = [[1,2,1],[0,0,0],[-1,-2,-1]]
+class MaxPool2:
+  # A Max Pooling layer using a pool size of 2.
 
-zm2 = np.pad(zm2,1,mode='constant')
+  def iterate_regions(self, image):
 
-print(zm2)
-print(zm2.shape)
+    h, w, _ = image.shape
+    new_h = h // 2
+    new_w = w // 2
 
-h,w = zm2.shape
+    for i in range(new_h):
+      for j in range(new_w):
+        im_region = image[(i * 2):(i * 2 + 2), (j * 2):(j * 2 + 2)]
+        yield im_region, i, j
 
-for y in range(h-1):
-    for x in range(w-1):
-        region = zm2[y:(y+2),x:(x+2)]
-        print(region,y,x)
+  def forward(self, input):
 
+    h, w, num_filters = input.shape
+    output = np.zeros((h // 2, w // 2, num_filters))
 
-new_h = h // 2
-new_w = w // 2
-
-for i in range(new_h):
-  for j in range(new_w):
-    im_region = zm2[(i * 2):(i * 2 + 2), (j * 2):(j * 2 + 2)]
-    print(im_region, i, j)
+    for im_region, i, j in self.iterate_regions(input):
+      output[i, j] = np.amax(im_region, axis=(0, 1))
+    return output
