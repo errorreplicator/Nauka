@@ -1,4 +1,4 @@
-from conolution.conv_ex import Conv3x3
+from covolution.conv_ex import Conv3x3
 import numpy as np
 from PIL import Image
 from matplotlib import pyplot as plt

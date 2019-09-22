@@ -1,24 +1,35 @@
 import numpy as np
+import mnist
+from matplotlib import pyplot as plt
+np.set_printoptions(linewidth=np.inf)
 
-class MaxPool2:
-  # A Max Pooling layer using a pool size of 2.
+imgs = mnist.test_images()
+print(len(imgs))
+print(type(mnist))
+print(imgs[0])
 
-  def iterate_regions(self, image):
+plt.imshow(imgs[0])
+plt.show()
 
-    h, w, _ = image.shape
-    new_h = h // 2
-    new_w = w // 2
 
-    for i in range(new_h):
-      for j in range(new_w):
-        im_region = image[(i * 2):(i * 2 + 2), (j * 2):(j * 2 + 2)]
-        yield im_region, i, j
+np.random.seed(20)
 
-  def forward(self, input):
+biases = np.zeros(4)
 
-    h, w, num_filters = input.shape
-    output = np.zeros((h // 2, w // 2, num_filters))
+img = np.random.randint(0, 20, size=(2,2))/7
+print(img, '->random image after maxpool', end='\n\n')
 
-    for im_region, i, j in self.iterate_regions(input):
-      output[i, j] = np.amax(im_region, axis=(0, 1))
-    return output
+img = img.flatten()
+print(img, '->image flatter', end='\n\n')
+
+weights = np.random.randint(0, 25, size=(4, 4))
+print(weights, '-> weights', end='\n\n')
+
+total = np.dot(img,weights) + biases
+print(total, '->dot total + bias',end='\n\n')
+
+exp = np.exp(total) # check exp how it works
+print(exp,end='\n\n')
+
+retu = exp / np.sum(exp,axis=0)
+print(retu)
