@@ -1,6 +1,6 @@
-from covolution.conv_ex import Conv3x3
-from covolution.maxpool import MaxPool2D
-from covolution.softmax import Softmax
+from convolution.conv_ex import Conv3x3
+from convolution.maxpool import MaxPool2D
+from convolution.softmax import Softmax
 import numpy as np
 from PIL import Image
 from matplotlib import pyplot as plt

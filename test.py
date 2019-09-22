@@ -3,6 +3,8 @@ import mnist
 from matplotlib import pyplot as plt
 np.set_printoptions(linewidth=np.inf)
 
+HOW EXP WIRKS AT THE END
+
 imgs = mnist.test_images()
 print(len(imgs))
 print(type(mnist))
