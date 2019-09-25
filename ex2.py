@@ -1,36 +1,47 @@
-import pandas as pd
 import numpy as np
-import re
-pd.set_option('display.width',320)
 
-names = ['user_id','movie_id','rating']
-movies = pd.read_csv('../1/u.data', sep='\t',names=names,usecols=range(3))
-cols = ['movie_id','title']
-movies2 = pd.read_csv('../1/u.item',sep='|',usecols=range(2),encoding = 'ISO-8859-1',names=cols)
+l0_0 = np.array([2, 0, 2, 2, 3])
+l0_1 = np.array([1, 1, 0, 1, 2])
+l0_2 = np.array([0, 1, 0, 2, 1])
+l0_3 = np.array([1, 1, 2, 1, 1])
+l0_4 = np.array([2, 0, 0, 2, 1])
 
-imdb = pd.merge(movies,movies2,on='movie_id')
-imdb = pd.DataFrame(imdb)
-# print(imdb[imdb['title'] == '1-900 (1994)'])
-ratings = imdb.pivot_table(index='user_id',columns='title',values='rating')
-ratingsSW = ratings['Star Wars (1977)']
-ratings = pd.DataFrame(ratings)
-# print(ratingsSW.head())
+l1_0 = np.array([2, 1, 1, 0, 2])
+l1_1 = np.array([2, 2, 2, 0, 2])
+l1_2 = np.array([2, 0, 1, 0, 2])
+l1_3 = np.array([2, 1, 0, 1, 2])
+l1_4 = np.array([1, 2, 0, 2, 1])
 
-similarMovies = ratings.corrwith(ratingsSW)
-similarMovies = similarMovies.dropna()
-# print(similarMovies.sort_values(ascending=False))
+l2_0 = np.array([2, 1, 0, 1, 1])
+l2_1 = np.array([2, 1, 0, 2, 0])
+l2_2 = np.array([0, 2, 2, 0, 1])
+l2_3 = np.array([0, 1, 2, 2, 2])
+l2_4 = np.array([1, 2, 0, 1, 1])
 
-popularMovies = imdb.groupby('title').agg({'rating':[np.size,np.mean]})
-popularMovies = popularMovies[popularMovies['rating']['size'] >=200]
-# print(popularMovies.head(20))
-df = popularMovies.join(pd.DataFrame(similarMovies,columns=['similarity']))
-print(df.sort_values('similarity',ascending=False)[:20])
-# tmp = []
-# tmp = ratings.columns
-#
-# r = re.compile("Star")
-# newlist = filter(r.match, tmp)
-# print (list(newlist))
+w0_0 = [[1, -1, 1], [-1, -1, -1], [0, 0, 0]]
+w0_1 = [[0, -1, -1], [-1, 1, 1], [1, 0, 0]]
+w0_2 = [[-1, 1, -1], [0, -1, 1], [0, 0, -1]]
 
-# ratingsSW = ratings['Star Wars']
-# print(ratings.head())
+img_d0 = np.vstack([l0_0, l0_1, l0_2, l0_3, l0_4])
+img_d0 = np.pad(img_d0, 1, mode='constant')
+img_d1 = np.vstack([l1_0,l0_1,l0_2,l0_3,l0_4])
+img_d1 = np.pad(img_d1,1,mode='constant')
+img_d2 = np.vstack([l2_0,l2_1,l2_2,l2_3,l2_4])
+img_d2 = np.pad(img_d2,1,mode='constant')
+
+
+def r_imd2D(dim=-1):
+    if dim == -1:
+        return np.vstack([[img_d0],[img_d1],[img_d2]])
+    else:
+        return img_d0
+
+def r_filter0(number=-1): # change name and functions to 2D and 3D
+    filter_0 = np.vstack([[w0_0], [w0_1], [w0_2]])
+    if number == -1:
+        return  filter_0
+    elif 0 <= number < 4:
+        return filter_0[number]
+    else:
+        print('incorrect filter dimension')
+        return None
