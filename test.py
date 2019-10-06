@@ -1,32 +1,20 @@
 import numpy as np
-import mnist
+import pandas as pd
 from matplotlib import pyplot as plt
+import pandas as pd
 np.set_printoptions(linewidth=np.inf)
+np.random.seed(10)
+zm1 = np.random.randint(0,24*60*60,200)
+# print(zm1)
+# print(24*60*60)
 
-# HOW EXP WIRKS AT THE END
+def rand_time(n):
+    sec = np.random.randint(0,24*60*60,n)
+    return sec
+df = pd.DataFrame()
 
-# imgs = mnist.test_images()
-# print(len(imgs))
-# print(type(mnist))
-# print(imgs[0])
+df['sec'] = rand_time(1000)
 
-# plt.imshow(imgs[0])
-# plt.show()
-
-
-np.random.seed(20)
-
-biases = np.zeros(4)
-
-img = np.random.randint(0, 20, size=(2,2))/7
-print(img, '->random image after maxpool', end='\n\n')
-
-img = img.flatten()
-print(img, '->image flatter', end='\n\n')
-
-weights = np.random.randint(0, 25, size=(4, 4))/10
-print(weights, '-> weights', end='\n\n')
-
-total = np.dot(img,weights) + biases
-print(total, '->dot total + bias',end='\n\n')
-
+df = df.sort_values('sec').reset_index(drop=True)
+print(df.head())
+print(np.pi).
