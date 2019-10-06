@@ -92,5 +92,5 @@ def organy(ile):
     t.pd()
     linia((ile*3)+(ile-1))
 
-linia(20)
+organy(13)
 t.done()

@@ -1,33 +1,45 @@
-import pandas as pd
+import numpy as np
+n_categories = 3  # number of possible categories
+emb_dim = 5       # dimension of the emdedding vectors
 
-df1 = pd.DataFrame({'HPI':[80,85,88,85],
-                    'Int_rate':[2, 3, 2, 2],
-                    'US_GDP_Thousands':[50, 55, 65, 55]},
-                   index = [2001, 2002, 2003, 2004])
 
-df2 = pd.DataFrame({'HPI':[80,85,88,85],
-                    'Int_rate':[2, 3, 2, 2],
-                    'US_GDP_Thousands':[50, 55, 65, 55]},
-                   index = [2005, 2006, 2007, 2008])
+X = np.array([
+    [1,0,0],  # Category 1
+    [0,1,0],  # Category 2
+    [0,0,1],  # Category 3
+    [0,0,1]   # Category 3
+])
 
-df3 = pd.DataFrame({'HPI':[80,85,88,85],
-                    'Unemployment':[7, 8, 9, 6],
-                    'Low_tier_HPI':[50, 52, 50, 53]},
-                   index = [2001, 2002, 2003, 2004])
+y = np.array([[1,1,0,0]]).T
 
-# print(pd.merge(df1,df2, on=['HPI','Int_rate']))
+# initialize the weights
+weights0 = np.random.random((n_categories, emb_dim))
+weights1 = np.random.random((emb_dim, 1))
 
-df5 = pd.DataFrame({
-                    'Int_rate':[2, 3, 2, 2],
-                    'US_GDP_Thousands':[50, 55, 65, 55],
-                    'Year':[2001, 2002, 2003, 2004]
-                    })
 
-df6 = pd.DataFrame({
-                    'Unemployment':[7, 8, 9, 6],
-                    'Low_tier_HPI':[50, 52, 50, 53],
-                    'Year':[2001, 2003, 2004, 2005]})
 
-merger = pd.merge(df5,df6, on='Year', how='outer')
-merger.set_index('Year', inplace=True)
-print(merger)
+def sigmoid(x, deriv=False):
+    if(deriv == True):
+        return x * (1 - x)
+    return 1 / (1 + np.exp(-x))
+
+
+
+learning_rate = 0.1
+
+
+for j in range(60000):
+    # forward pass
+    output1 = np.dot(X, weights0)  # A linear hidden layer
+    output2 = sigmoid(np.dot(output1, weights1))  # Output layer with sigmoid activation
+    # computing error
+    l2_error = y - output2
+    if (j% 10000) == 0:
+        print("Error:" + str(np.mean(np.abs(l2_error))))
+    # backward pass
+    l2_delta = l2_error * sigmoid(output2, deriv=True)
+    l1_error = l2_delta.dot(weights1.T)
+    l1_delta = l1_error
+    # update the weigths
+    weights1 += learning_rate * output1.T.dot(l2_delta)
+    weights0 += learning_rate * X.T.dot(l1_delta)
