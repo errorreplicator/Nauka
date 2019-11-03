@@ -19,8 +19,8 @@ def read_data():
 
 def clean_data_categ(categorical, numerical):
     train, test = read_data()
-    train['Salary'] = np.where(train['Salary'] == '>50K', 1, 0)
-    test['Salary'] = np.where(test['Salary'] == '>50K.', 1, 0)
+    train['Salary'] = np.where(train['Salary'] == ' >50K', 1, 0)
+    test['Salary'] = np.where(test['Salary'] == ' >50K.', 1, 0)
 
     y_train = train['Salary'].values
     y_test = test['Salary'].values
