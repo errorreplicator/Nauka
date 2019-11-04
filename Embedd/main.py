@@ -13,7 +13,7 @@ numerical = ['Age','EducationNum','CapitalGain', 'CapitalLoss','HoursWeek']
 # train, test = dataproc.read_data()
 
 
-X_train, y_train, X_test, y_test = dataproc.clean_data_categ(categorical, numerical)
+X_train, y_train, X_test, y_test = dataproc.data_categ_numpy(categorical, numerical)
 
 print(y_test)
 
