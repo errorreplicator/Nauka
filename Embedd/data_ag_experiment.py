@@ -15,13 +15,13 @@ numerical = ['Age','EducationNum','CapitalGain', 'CapitalLoss','HoursWeek']
 
 train, test = dataproc.read_data()
 
-X_train,y_train, X_test, y_test = dataproc.data_func_swithOFF()
+X_train,y_train, X_test, y_test = dataproc.data_func_swithON()
 
-model = modeler.get_model_Emb1()
-model.fit(X_train, y_train.values, epochs=100, batch_size=256, validation_split=0.2)
+model = modeler.get_model_Emb1DropoutBIG()
+model.fit(X_train, y_train.values, epochs=300, batch_size=256, validation_split=0.2)
 
 
-model.save('/home/piotr/data/test/model_100_swithOFF_simple.h5')
+model.save('/home/piotr/data/test/model_300_swithON_EmbeddBIGDrop.h5')
 
 
 

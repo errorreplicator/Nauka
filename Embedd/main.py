@@ -10,13 +10,13 @@ model = Sequential()
 
 # model.load_weights('/home/piotr/data/test/model_300_swithOFF_simple.h5')
 
-X_train, y_train, X_test, y_test = dataproc.data_seq_swithON()
+X_train, y_train, X_test, y_test = dataproc.data_func_swithOFF()
 
-model = load_model('/home/piotr/data/test/model_300_swithON_simple.h5')
-model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+model = load_model('/home/piotr/data/test/model_300_swithOFF_EmbeddBIGDrop.h5')
+# model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 model.predict(X_test)
 
 
-y_pred = model.predict_classes(X_test)
+# y_pred = model.predict_classes(X_test)
 result = model.evaluate(X_test,y_test)
 print(result)

@@ -184,7 +184,7 @@ def data_func_swithON():
     test = data_minmax_column(test, numerical)
 
     train = swith_merge(train, numerical)
-    test = swith_merge(test,numerical)
+    # test = swith_merge(test,numerical)
 
     X_train, y_train = data_split(train, 'Salary')
     X_test, y_test = data_split(test, 'Salary')
