@@ -16,61 +16,54 @@ def read_data():
 
     return train, test
 
-def data_split(df, column_name):
+def split_data(df, column_name):
 
     y_df = df[column_name]
     X_df = df.drop(column_name, axis=1)
     return X_df,y_df
 
-def data_remove(df, column_name):
+def remove_data(df, column_name):
 
     del df[column_name]
     return df
 
-def data_labelencoder(df,column_list):
+def labelencoder(df, column_list):
 
     encoder = LabelEncoder()
     for x in column_list:
         df[x] = encoder.fit_transform(df.loc[:,x])
     return df
 
-def data_minmax_column(df,column_list):
+def minmax_column(df, column_list):
     scaler = MinMaxScaler()
     scaler.fit(df[column_list])
     df[column_list] = scaler.transform(df[column_list])
     return df
 
-def data_minmax_row(df, columns_list):
-    columns_list = df.columns
+def minmax_row(df, columns_list):
     df_numpy = df[columns_list].to_numpy()
-    df_left = df[df.columns.difference(columns_list)]
     scaler = MinMaxScaler(feature_range=(0, 1))
     scaler.fit(df_numpy.T)
-    df = scaler.transform(df_numpy.T).T
-    df = pd.DataFrame(df, columns=columns_list, index=range(df.shape[0]))
-    df = df.join(df_left)
-    df = df[columns_list]
+    df_rescale = scaler.transform(df_numpy.T).T
+    df_rescale = pd.DataFrame(df_rescale, columns=columns_list, index=range(df.shape[0]))
+    df[columns_list] = df_rescale
     return df
 
-def data_to_numpy(df,column_list):
+def to_numpy_data(df, column_list):
     return np.array(df[column_list])
 
 
 def swith_merge(df, numerical):
-    columns_list = df.columns
-    df_solid = df[df.columns.difference(numerical)]
-    df_numer = df[numerical]
     numerical_rev = numerical[::-1]
-    df_revers = df_numer[numerical_rev]
-    df_joined = df_solid.join(df_revers)
-    df_return = df.append(df_joined).reset_index()
+    df2 = df.copy()
+    df2[numerical] = df2[numerical_rev]
+    df_return = df.append(df2).reset_index()
     df_return.drop('index',axis=1,inplace=True)
-    df_return = df_return[columns_list]
     return df_return
 
 def data_tomodel(df, categorical, numerical):
-    X_train = {col: data_to_numpy(df,[col]) for col in categorical}
-    X_train['Numerical'] = data_to_numpy(df,numerical)
+    X_train = {col: to_numpy_data(df, [col]) for col in categorical}
+    X_train['Numerical'] = to_numpy_data(df, numerical)
     return X_train
 
 def data_seq_swithOFF():
@@ -79,25 +72,25 @@ def data_seq_swithOFF():
 
     train, test = read_data()
 
-    train = data_remove(train, 'Id')
-    test = data_remove(test, 'Id')
+    train = remove_data(train, 'Id')
+    test = remove_data(test, 'Id')
 
-    train = data_labelencoder(train, categorical)
-    test = data_labelencoder(test, categorical)
-    train = data_labelencoder(train, ['Salary'])
-    test = data_labelencoder(test, ['Salary'])
+    train = labelencoder(train, categorical)
+    test = labelencoder(test, categorical)
+    train = labelencoder(train, ['Salary'])
+    test = labelencoder(test, ['Salary'])
 
-    train = data_minmax_column(train, numerical)
-    test = data_minmax_column(test, numerical)
+    train = minmax_column(train, numerical)
+    test = minmax_column(test, numerical)
 
     # train = dataproc.swith_merge(train, numerical)
     # test = dataproc.swith_merge(test,numerical)
 
-    X_train, y_train = data_split(train, 'Salary')
-    X_test, y_test = data_split(test, 'Salary')
+    X_train, y_train = split_data(train, 'Salary')
+    X_test, y_test = split_data(test, 'Salary')
 
-    X_train = data_to_numpy(X_train, X_train.columns)
-    X_test = data_to_numpy(X_test, X_test.columns)
+    X_train = to_numpy_data(X_train, X_train.columns)
+    X_test = to_numpy_data(X_test, X_test.columns)
 
     return X_train,y_train, X_test, y_test
 
@@ -110,25 +103,25 @@ def data_seq_swithON():
 
     # print(train.head())
 
-    train = data_remove(train, 'Id')
-    test = data_remove(test, 'Id')
+    train = remove_data(train, 'Id')
+    test = remove_data(test, 'Id')
 
-    train = data_labelencoder(train, categorical)
-    test = data_labelencoder(test, categorical)
-    train = data_labelencoder(train, ['Salary'])
-    test = data_labelencoder(test, ['Salary'])
+    train = labelencoder(train, categorical)
+    test = labelencoder(test, categorical)
+    train = labelencoder(train, ['Salary'])
+    test = labelencoder(test, ['Salary'])
 
-    train = data_minmax_column(train, numerical)
-    test = data_minmax_column(test, numerical)
+    train = minmax_column(train, numerical)
+    test = minmax_column(test, numerical)
 
     train = swith_merge(train, numerical)
     test = swith_merge(test,numerical)
 
-    X_train, y_train = data_split(train, 'Salary')
-    X_test, y_test = data_split(test, 'Salary')
+    X_train, y_train = split_data(train, 'Salary')
+    X_test, y_test = split_data(test, 'Salary')
 
-    X_train = data_to_numpy(X_train, X_train.columns)
-    X_test = data_to_numpy(X_test, X_test.columns)
+    X_train = to_numpy_data(X_train, X_train.columns)
+    X_test = to_numpy_data(X_test, X_test.columns)
 
     return X_train, y_train, X_test, y_test
 
@@ -140,31 +133,30 @@ def data_func_swithOFF():
 
     train, test = read_data()
 
-    train = data_remove(train, 'Id')
-    test = data_remove(test, 'Id')
+    train = remove_data(train, 'Id')
+    test = remove_data(test, 'Id')
 
-    train = data_labelencoder(train, categorical)
-    test = data_labelencoder(test, categorical)
-    train = data_labelencoder(train, ['Salary'])
-    test = data_labelencoder(test, ['Salary'])
+    train = labelencoder(train, categorical)
+    test = labelencoder(test, categorical)
+    train = labelencoder(train, ['Salary'])
+    test = labelencoder(test, ['Salary'])
 
-    train = data_minmax_column(train, numerical)
-    test = data_minmax_column(test, numerical)
+    train = minmax_column(train, numerical)
+    test = minmax_column(test, numerical)
 
     # train = dataproc.swith_merge(train, numerical)
     # test = dataproc.swith_merge(test,numerical)
 
-    X_train, y_train = data_split(train, 'Salary')
-    X_test, y_test = data_split(test, 'Salary')
+    X_train, y_train = split_data(train, 'Salary')
+    X_test, y_test = split_data(test, 'Salary')
 
-    X_train_dict= {col: data_to_numpy(X_train, [col]) for col in categorical}
-    X_train_dict['Numerical'] = data_to_numpy(X_train, numerical)
+    X_train_dict= {col: to_numpy_data(X_train, [col]) for col in categorical}
+    X_train_dict['Numerical'] = to_numpy_data(X_train, numerical)
 
-    X_test_dict = {col: data_to_numpy(X_test, [col]) for col in categorical}
-    X_test_dict['Numerical'] = data_to_numpy(X_test, numerical)
+    X_test_dict = {col: to_numpy_data(X_test, [col]) for col in categorical}
+    X_test_dict['Numerical'] = to_numpy_data(X_test, numerical)
 
     return X_train_dict, y_train, X_test_dict, y_test
-
 
 def data_func_swithON():
     categorical = ['Workclass', 'Education', 'MaritalStatus', 'Occupation', 'Relationship', 'Race', 'Sex', 'Country']
@@ -172,28 +164,62 @@ def data_func_swithON():
 
     train, test = read_data()
 
-    train = data_remove(train, 'Id')
-    test = data_remove(test, 'Id')
+    train = remove_data(train, 'Id')
+    test = remove_data(test, 'Id')
 
-    train = data_labelencoder(train, categorical)
-    test = data_labelencoder(test, categorical)
-    train = data_labelencoder(train, ['Salary'])
-    test = data_labelencoder(test, ['Salary'])
+    train = labelencoder(train, categorical)
+    test = labelencoder(test, categorical)
+    train = labelencoder(train, ['Salary'])
+    test = labelencoder(test, ['Salary'])
 
-    train = data_minmax_column(train, numerical)
-    test = data_minmax_column(test, numerical)
+    train = minmax_column(train, numerical)
+    test = minmax_column(test, numerical)
 
     train = swith_merge(train, numerical)
     # test = swith_merge(test,numerical)
 
-    X_train, y_train = data_split(train, 'Salary')
-    X_test, y_test = data_split(test, 'Salary')
+    X_train, y_train = split_data(train, 'Salary')
+    X_test, y_test = split_data(test, 'Salary')
 
-    X_train_dict= {col: data_to_numpy(X_train, [col]) for col in categorical}
-    X_train_dict['Numerical'] = data_to_numpy(X_train, numerical)
+    X_train_dict= {col: to_numpy_data(X_train, [col]) for col in categorical}
+    X_train_dict['Numerical'] = to_numpy_data(X_train, numerical)
 
-    X_test_dict = {col: data_to_numpy(X_test, [col]) for col in categorical}
-    X_test_dict['Numerical'] = data_to_numpy(X_test, numerical)
+    X_test_dict = {col: to_numpy_data(X_test, [col]) for col in categorical}
+    X_test_dict['Numerical'] = to_numpy_data(X_test, numerical)
+
+    return X_train_dict, y_train, X_test_dict, y_test
+
+def data_func_swithONscaleROW():
+    categorical = ['Workclass', 'Education', 'MaritalStatus', 'Occupation', 'Relationship', 'Race', 'Sex', 'Country']
+    numerical = ['Age', 'EducationNum', 'CapitalGain', 'CapitalLoss', 'HoursWeek']
+
+    train, test = read_data()
+
+    train = remove_data(train, 'Id')
+    test = remove_data(test, 'Id')
+
+    train = labelencoder(train, categorical)
+    test = labelencoder(test, categorical)
+    train = labelencoder(train, ['Salary'])
+    test = labelencoder(test, ['Salary'])
+
+
+    train = minmax_column(train, numerical)
+    test = minmax_column(test, numerical)
+
+    train = swith_merge(train, numerical)
+    # test = swith_merge(test,numerical)
+    train = minmax_row(train, numerical)
+    test = minmax_row(test, numerical)
+
+    X_train, y_train = split_data(train, 'Salary')
+    X_test, y_test = split_data(test, 'Salary')
+
+    X_train_dict= {col: to_numpy_data(X_train, [col]) for col in categorical}
+    X_train_dict['Numerical'] = to_numpy_data(X_train, numerical)
+
+    X_test_dict = {col: to_numpy_data(X_test, [col]) for col in categorical}
+    X_test_dict['Numerical'] = to_numpy_data(X_test, numerical)
 
     return X_train_dict, y_train, X_test_dict, y_test
 

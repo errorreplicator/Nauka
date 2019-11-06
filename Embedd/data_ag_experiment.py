@@ -3,6 +3,7 @@ warnings.filterwarnings("ignore")
 import numpy as np
 import pandas as pd
 from Embedd import modeler, dataproc
+from sklearn.preprocessing import MinMaxScaler
 
 desired_width = 320
 pd.set_option('display.max_rows', 500)
@@ -15,12 +16,12 @@ numerical = ['Age','EducationNum','CapitalGain', 'CapitalLoss','HoursWeek']
 
 train, test = dataproc.read_data()
 
-X_train,y_train, X_test, y_test = dataproc.data_func_swithON()
+
+X_train,y_train, X_test, y_test = dataproc.data_func_swithONscaleROW()
+
 
 model = modeler.get_model_Emb1DropoutBIG()
 model.fit(X_train, y_train.values, epochs=300, batch_size=256, validation_split=0.2)
-
-
 model.save('/home/piotr/data/test/model_300_swithON_EmbeddBIGDrop.h5')
 
 
