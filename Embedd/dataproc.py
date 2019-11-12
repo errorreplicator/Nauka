@@ -66,6 +66,19 @@ def data_tomodel(df, categorical, numerical):
     X_train['Numerical'] = to_numpy_data(df, numerical)
     return X_train
 
+def array2frame(dict_name, dict):
+    names = [f'{dict_name}_{x}' for x in range(len(dict[0]))]
+    df = pd.DataFrame(dict, columns=names)
+    return df
+
+
+def dict2df(dict,dataFrame):
+    for key in dict:
+        df = array2frame(key, dict[key][0])
+        colnm = key[:-4]
+        dataFrame = pd.merge(dataFrame, df, left_on=colnm, right_index=True)
+    return dataFrame
+
 def data_seq_swithOFF():
     categorical = ['Workclass', 'Education', 'MaritalStatus', 'Occupation', 'Relationship', 'Race', 'Sex', 'Country']
     numerical = ['Age', 'EducationNum', 'CapitalGain', 'CapitalLoss', 'HoursWeek']
@@ -94,6 +107,27 @@ def data_seq_swithOFF():
 
     return X_train,y_train, X_test, y_test
 
+def dataframe_seq_swithOFF():
+    categorical = ['Workclass', 'Education', 'MaritalStatus', 'Occupation', 'Relationship', 'Race', 'Sex', 'Country']
+    numerical = ['Age', 'EducationNum', 'CapitalGain', 'CapitalLoss', 'HoursWeek']
+
+    train, test = read_data()
+
+    train = remove_data(train, 'Id')
+    test = remove_data(test, 'Id')
+
+    train = labelencoder(train, categorical)
+    test = labelencoder(test, categorical)
+    train = labelencoder(train, ['Salary'])
+    test = labelencoder(test, ['Salary'])
+
+    train = minmax_column(train, numerical)
+    test = minmax_column(test, numerical)
+
+    X_train, y_train = split_data(train, 'Salary')
+    X_test, y_test = split_data(test, 'Salary')
+
+    return X_train,y_train, X_test, y_test
 
 def data_seq_swithON():
     categorical = ['Workclass', 'Education', 'MaritalStatus', 'Occupation', 'Relationship', 'Race', 'Sex', 'Country']
@@ -223,96 +257,7 @@ def data_func_swithONscaleROW():
 
     return X_train_dict, y_train, X_test_dict, y_test
 
-####################################################################################################################
 
-# def data_categ_numpy(df, categorical, numerical,target_column,target_value):
-#     df[target_column] = np.where(df[target_column] == target_value, 1, 0)
-#
-#     X_df, y_df = data_split(df,target_column)
-#     y_df = df.values
-#
-#     X_df = data_labelencoder(X_df,categorical)
-#     X_df = data_minmax_row(X_df,categorical)
-#     X_dict = data_tomodel(X_df,categorical,numerical)
-#     return X_dict, y_df
-
-def data_categ(categorical, numerical,train,test):
-    # train, test = read_data()
-    train['Salary'] = np.where(train['Salary'] == ' >50K', 1, 0)
-    test['Salary'] = np.where(test['Salary'] == ' >50K.', 1, 0)
-
-    y_train = train['Salary'].values
-    y_test = test['Salary'].values
-
-    del train['Id']
-    del train['Salary']
-    del test['Id']
-    del test['Salary']
-
-    encoder = LabelEncoder()
-    scaler = MinMaxScaler()
-
-    for x in categorical:
-        train[x] = encoder.fit_transform(train[x])
-        test[x] = encoder.fit_transform(test[x])
-
-    scaler.fit(train[numerical])
-    train[numerical] = scaler.transform(train[numerical])
-
-    scaler.fit(test[numerical])
-    test[numerical] = scaler.transform(test[numerical])
-
-    X_train = {col: np.array(train[col]) for col in categorical}
-    X_train['Numerical'] = np.array(train[numerical])
-
-    X_test = {col: np.array(test[col]) for col in categorical}
-    X_test['Numerical'] = np.array(test[numerical])
-
-    return X_train, y_train, X_test, y_test
-
-def data_categ_clean(categorical, numerical,train,test):
-    train, test = train,test
-    train['Salary'] = np.where(train['Salary'] == ' >50K', 1, 0)
-    test['Salary'] = np.where(test['Salary'] == ' >50K.', 1, 0)
-
-    # y_train = train['Salary'].values
-    # y_test = test['Salary'].values
-
-    del train['Id']
-    # del train['Salary']
-    del test['Id']
-    # del test['Salary']
-
-    encoder = LabelEncoder()
-    scaler = MinMaxScaler()
-
-    for x in categorical:
-        train[x] = encoder.fit_transform(train[x])
-        test[x] = encoder.fit_transform(test[x])
-
-    scaler.fit(train[numerical])
-    train[numerical] = scaler.transform(train[numerical])
-
-    scaler.fit(test[numerical])
-    test[numerical] = scaler.transform(test[numerical])
-
-    return train, train
-
-def data_categ_normalized(categorical, numerical,train,test):
-
-    y_train = train['Salary'].values
-    y_test = test['Salary'].values
-
-    del train['Salary']
-    del test['Salary']
-
-    X_train = {col: np.array(train[col]) for col in categorical}
-    X_train['Numerical'] = np.array(train[numerical])
-
-    X_test = {col: np.array(test[col]) for col in categorical}
-    X_test['Numerical'] = np.array(test[numerical])
-
-    return X_train, y_train, X_test, y_test
 
 
 
