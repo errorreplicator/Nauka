@@ -34,6 +34,13 @@ def labelencoder(df, column_list):
         df[x] = encoder.fit_transform(df.loc[:,x])
     return df
 
+def labelencoder_bycopy(df, column_list):
+
+    encoder = LabelEncoder()
+    for x in column_list:
+        df[f'{x}_encode'] = encoder.fit_transform(df.loc[:,x])
+    return df
+
 def minmax_column(df, column_list):
     scaler = MinMaxScaler()
     scaler.fit(df[column_list])
@@ -77,6 +84,7 @@ def dict2df(dict,dataFrame):
         df = array2frame(key, dict[key][0])
         colnm = key[:-4]
         dataFrame = pd.merge(dataFrame, df, left_on=colnm, right_index=True)
+        # dataFrame.drop(colnm,axis=1,inplace=True)
     return dataFrame
 
 def data_seq_swithOFF():
@@ -104,28 +112,6 @@ def data_seq_swithOFF():
 
     X_train = to_numpy_data(X_train, X_train.columns)
     X_test = to_numpy_data(X_test, X_test.columns)
-
-    return X_train,y_train, X_test, y_test
-
-def dataframe_seq_swithOFF():
-    categorical = ['Workclass', 'Education', 'MaritalStatus', 'Occupation', 'Relationship', 'Race', 'Sex', 'Country']
-    numerical = ['Age', 'EducationNum', 'CapitalGain', 'CapitalLoss', 'HoursWeek']
-
-    train, test = read_data()
-
-    train = remove_data(train, 'Id')
-    test = remove_data(test, 'Id')
-
-    train = labelencoder(train, categorical)
-    test = labelencoder(test, categorical)
-    train = labelencoder(train, ['Salary'])
-    test = labelencoder(test, ['Salary'])
-
-    train = minmax_column(train, numerical)
-    test = minmax_column(test, numerical)
-
-    X_train, y_train = split_data(train, 'Salary')
-    X_test, y_test = split_data(test, 'Salary')
 
     return X_train,y_train, X_test, y_test
 
@@ -166,7 +152,7 @@ def data_func_swithOFF():
     numerical = ['Age', 'EducationNum', 'CapitalGain', 'CapitalLoss', 'HoursWeek']
 
     train, test = read_data()
-
+    train = train.drop(axis=0, index=19609)  # delete Holand one row wich breaks encodes as it does not live in test
     train = remove_data(train, 'Id')
     test = remove_data(test, 'Id')
 
@@ -257,7 +243,28 @@ def data_func_swithONscaleROW():
 
     return X_train_dict, y_train, X_test_dict, y_test
 
+def dataframe_seq_swithOFF():
+    categorical = ['Workclass', 'Education', 'MaritalStatus', 'Occupation', 'Relationship', 'Race', 'Sex', 'Country']
+    numerical = ['Age', 'EducationNum', 'CapitalGain', 'CapitalLoss', 'HoursWeek']
 
+    train, test = read_data()
+    train = train.drop(axis=0, index=19609) # delete Holand one row wich breaks encodes as it does not live in test
+
+    train = remove_data(train, 'Id')
+    test = remove_data(test, 'Id')
+
+    train = labelencoder(train, categorical)
+    test = labelencoder(test, categorical)
+    train = labelencoder(train, ['Salary'])
+    test = labelencoder(test, ['Salary'])
+
+    train = minmax_column(train, numerical)
+    test = minmax_column(test, numerical)
+
+    X_train, y_train = split_data(train, 'Salary')
+    X_test, y_test = split_data(test, 'Salary')
+
+    return X_train,y_train, X_test, y_test
 
 
 

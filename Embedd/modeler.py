@@ -165,8 +165,9 @@ def get_model_Emb2Dropout(): #Sex not embedded
 def get_model_Seq(shape):
     model = Sequential()
 
-    model.add(Dense(128,input_shape=shape,activation='relu'))
-    model.add(Dense(64,activation='relu'))
+    model.add(Dense(1024,input_shape=shape,activation='relu'))
+    model.add(Dense(512,activation='relu'))
+    model.add(Dense(128, activation='relu'))
     model.add(Dense(1,activation='sigmoid'))
     model.compile(optimizer='adam',loss='binary_crossentropy',metrics=['accuracy'])
 
