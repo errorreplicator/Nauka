@@ -79,12 +79,14 @@ def array2frame(dict_name, dict):
     return df
 
 
-def dict2df(dict,dataFrame):
+def dict2df(dict,dataFrame,del_categ=True):
     for key in dict:
         df = array2frame(key, dict[key][0])
         colnm = key[:-4]
         dataFrame = pd.merge(dataFrame, df, left_on=colnm, right_index=True)
         # dataFrame.drop(colnm,axis=1,inplace=True)
+        if del_categ == True:
+            dataFrame.drop(colnm,axis=1,inplace=True)
     return dataFrame
 
 def data_seq_swithOFF():
