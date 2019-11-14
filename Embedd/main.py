@@ -48,67 +48,42 @@ weights = ['Workclass_emb','Education_emb','MaritalStatus_emb','Occupation_emb',
 
 ###############TEST $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-X_train, y_train, X_test, y_test = dataproc.dataframe_seq_swithOFF()
-model = load_model('/home/piotr/data/test/model_300_swithOFF_EmbeddBIGDrop_batch32.h5')
+# X_train, y_train, X_test, y_test = dataproc.dataframe_seq_swithOFF()
+# model = load_model('/home/piotr/data/test/model_300_swithOFF_EmbeddBIGDrop_batch32.h5')
 
 # check if encoding columns are deleted
 # check mean and std
 # check data X_train X_test
+# weight_dict = {}
+# for layer in weights:
+#     weight_dict[layer] = model.get_layer(layer).get_weights()
+# df_train = dataproc.dict2df(weight_dict,X_train)
+# df_test = dataproc.dict2df(weight_dict,X_test)
+#
+# # model_test = load_model('/home/piotr/data/test/model_300_swithOFF_seq_embedd2DF.h5')
+# model_test = modeler.get_model_Seq((56,))
+# model_test.fit(df_train,y_train,epochs=300)
+# model_test.save('/home/piotr/data/test/model_Seq_300_trainONembedd.h5')
+# result = model_test.evaluate(df_test,y_test)
+# print(result)
+
+###################################### train vs test data comparision #############################
+
+X_train, y_train, X_test, y_test = dataproc.dataframe_seq_swithOFF(categorical,numerical=numerical)
+model = load_model('/home/piotr/data/test/model_300_swithOFF_EmbeddBIGDrop_batch32.h5')
+# print(X_test.head())
+# print(pd.value_counts(y_test))
+# print(3846/12435)
 weight_dict = {}
 for layer in weights:
     weight_dict[layer] = model.get_layer(layer).get_weights()
+df_train = dataproc.dict2df(weight_dict,X_train)
 df_test = dataproc.dict2df(weight_dict,X_test)
-model_test = load_model('/home/piotr/data/test/model_300_swithOFF_seq_embedd2DF.h5')
-result = model_test.evaluate(df_test,y_test)
-print(result)
-
-###################################### train vs test data comparision #############################
-# train, test = dataproc.read_data()
-# train = train.drop(axis=0,index=19609)
-#
-#
-# train = dataproc.remove_data(train, 'Id')
-# test = dataproc.remove_data(test, 'Id')
-#
-# train = dataproc.labelencoder_bycopy(train, categorical)
-# test = dataproc.labelencoder_bycopy(test, categorical)
-# train = dataproc.labelencoder(train, ['Salary'])
-# test = dataproc.labelencoder(test, ['Salary'])
-#
-#
-# for x in categorical:
-#     print(train.groupby([x, f'{x}_encode']).size())
-#     print(test.groupby([x, f'{x}_encode']).size())
-#     # print(list(test[x].unique()), test[f'{x}_encode'].unique())
-#     print('#'*50)
-
-
-# filter_col = [x for x in df_train.columns if x.startswith('W')] # remove cloumns
-# print(df_train[filter_col])
-# print(df_test[filter_col])
-
-########################################################################################################
-
-
-# # print(df.loc[df['Sex'] == 0,filter_col] )
-#
-# df = dataproc.to_numpy_data(df,df.columns)
-#
-# model_seq = modeler.get_model_Seq((56,))
-# model_seq.fit(df,y_train,epochs=300)
-# model.save('/home/piotr/data/test/model_300_swithOFF_seq_embedd2DF.h5')
-
-
-# model = Model()
-# model.load_weights('/home/piotr/data/test/model_300_swithOFF_simple.h5')
-
-# model = modeler.get_model_Emb1DropoutBIG()
-# X_train, y_train, X_test, y_test = dataproc.data_func_swithOFF()
-# model.fit(X_train,y_train,epochs=300)
-# model.save('/home/piotr/data/test/model_300_swithOFF_EmbeddBIGDrop_batch32.h5')
-
-
-
-# model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-# model.predict(X_test)
-# y_pred = model.predict_classes(X_test)
+model = load_model('/home/piotr/data/test/model_Seq_300_trainONembedd.h5')
+# y_test = np.array(y_test)
+# y_test = y_test.reshape((1,-1))
+# print(model.summary())
+print(type(df_test.values))
+print(type(y_test.values))
+classes = model.predict_classes(df_test.values)
+print(classes)

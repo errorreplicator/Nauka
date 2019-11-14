@@ -166,8 +166,10 @@ def get_model_Seq(shape):
     model = Sequential()
 
     model.add(Dense(1024,input_shape=shape,activation='relu'))
-    model.add(Dense(512,activation='relu'))
+    model.add(Dense(1024,activation='relu'))
+    model.add(Dense(512, activation='relu'))
     model.add(Dense(128, activation='relu'))
+    model.add(Dense(32, activation='relu'))
     model.add(Dense(1,activation='sigmoid'))
     model.compile(optimizer='adam',loss='binary_crossentropy',metrics=['accuracy'])
 
@@ -241,3 +243,44 @@ def get_model_Emb1DropoutBIG():
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
     return model
+
+def tester():
+    Categorical = Input(shape=(51,), name='Categorical')
+    Numerical = Input(shape=(5,), name='Numerical')
+
+    Mid_Categorical = Dense(1024, activation='relu')(Categorical)
+
+    concat = concatenate([
+        Mid_Categorical
+        ,Numerical
+    ])
+
+    main = Dense(1024, activation='relu')(concat)
+    main = Dropout(0.1)(main)
+    main = Dense(512, activation='relu')(main)
+    main = Dropout(0.1)(main)
+    main = Dense(128, activation='relu')(main)
+    main = Dropout(0.1)(main)
+    output = Dense(1, activation='sigmoid')(main)
+
+    model = Model(inputs=[Categorical,Numerical],outputs=output)
+
+    model.compile(optimizer='adam',loss='binary_crossentropy',metrics=['accuracy'])
+
+    return model
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
