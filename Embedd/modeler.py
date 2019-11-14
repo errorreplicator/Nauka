@@ -1,7 +1,8 @@
 from keras.models import Sequential, Model
 from keras.layers import Dense,Input,Flatten,concatenate,Embedding, Dropout
-
-
+from sklearn.metrics import confusion_matrix, classification_report
+import pandas as pd
+import numpy as np
 def get_model_Emb1():
     # Inputs
     Workclass = Input(shape=(1,), name='Workclass')
@@ -270,10 +271,73 @@ def tester():
     return model
 
 
+def evaluateSeqModel(X_test, y_test, model, name):
+    val = model.evaluate(X_test, y_test)
+    pred = model.predict(X_test)
+    pred_class = model.predict_classes(X_test)
+    proba = model.predict_proba(X_test)
+    report = classification_report(y_test, pred_class)
+    cm = confusion_matrix(y_true=y_test, y_pred=pred_class)
+    df = pd.DataFrame({'y_test': y_test.flatten(), 'y_predi': pred_class.flatten(), 'y_proba': pred.flatten()})
+    print('Validaiton:')
+    print(val)
+    print('Clasifcation report:')
+    print(report)
+    print('Confiuzino Matrix:')
+    print(cm)
+
+    filename = f'{name}.txt'
+    # file = open(f'/home/piotr/data/test/{filename}','w')
+    with open(f'/home/piotr/data/test/{filename}','w') as file:
+        file.write('Validation:')
+        file.write('\n')
+        file.write(str(val) + '\n\n')
+        file.write('Clasificaton report:')
+        file.write('\n')
+        file.write(str(report) + '\n\n')
+        file.write('Confiuzion Matrix')
+        file.write('\n')
+        file.write(str(cm) + '\n\n')
+        file.write('Prediction Classes')
+        file.write('\n')
+        file.write(df.to_string() + '\n\n')
+
+    # return y_test,pred_class,pred
 
 
+def evaluateFunModel(X_test, y_test, model, name):
+    val = model.evaluate(X_test, y_test)
+    pred = model.predict(X_test)
+    pred_class = pred.argmax(axis=1) # different for functional model
+    # pred_class = np.argmax(pred,axis=1)
+    # proba = model.predict_proba(X_test)
+    report = classification_report(y_test, pred_class)
+    cm = confusion_matrix(y_true=y_test, y_pred=pred_class)
+    df = pd.DataFrame({'y_test': y_test.flatten(), 'y_predi': np.array(pred_class).flatten(), 'y_proba': np.array(pred).flatten()})
+    print('Validaiton:')
+    print(val)
+    print('Clasifcation report:')
+    print(report)
+    print('Confiuzino Matrix:')
+    print(cm)
 
+    filename = f'{name}.txt'
+    # file = open(f'/home/piotr/data/test/{filename}','w')
+    with open(f'/home/piotr/data/test/{filename}','w') as file:
+        file.write('Validation:')
+        file.write('\n')
+        file.write(str(val) + '\n\n')
+        file.write('Clasificaton report:')
+        file.write('\n')
+        file.write(str(report) + '\n\n')
+        file.write('Confiuzion Matrix')
+        file.write('\n')
+        file.write(str(cm) + '\n\n')
+        file.write('Prediction Classes')
+        file.write('\n')
+        file.write(df.to_string() + '\n\n')
 
+    # return y_test,pred_class,pred
 
 
 

@@ -89,6 +89,7 @@ def dict2df(dict,dataFrame,del_categ=True):
             dataFrame.drop(colnm,axis=1,inplace=True)
     return dataFrame
 
+
 def data_seq_swithOFF(categorical,numerical):
     # categorical = ['Workclass', 'Education', 'MaritalStatus', 'Occupation', 'Relationship', 'Race', 'Sex', 'Country']
     # numerical = ['Age', 'EducationNum', 'CapitalGain', 'CapitalLoss', 'HoursWeek']
@@ -105,9 +106,6 @@ def data_seq_swithOFF(categorical,numerical):
 
     train = minmax_column(train, numerical)
     test = minmax_column(test, numerical)
-
-    # train = dataproc.swith_merge(train, numerical)
-    # test = dataproc.swith_merge(test,numerical)
 
     X_train, y_train = split_data(train, 'Salary')
     X_test, y_test = split_data(test, 'Salary')
@@ -178,9 +176,9 @@ def data_func_swithON():
 
     return X_train_dict, y_train, X_test_dict, y_test
 
-def data_func_swithOFF():
-    categorical = ['Workclass', 'Education', 'MaritalStatus', 'Occupation', 'Relationship', 'Race', 'Sex', 'Country']
-    numerical = ['Age', 'EducationNum', 'CapitalGain', 'CapitalLoss', 'HoursWeek']
+def data_func_swithOFF(categorical,numerical):
+    # categorical = ['Workclass', 'Education', 'MaritalStatus', 'Occupation', 'Relationship', 'Race', 'Sex', 'Country']
+    # numerical = ['Age', 'EducationNum', 'CapitalGain', 'CapitalLoss', 'HoursWeek']
 
     train, test = read_data()
     train = train.drop(axis=0, index=19609)  # delete Holand one row wich breaks encodes as it does not live in test
@@ -201,13 +199,13 @@ def data_func_swithOFF():
     X_train, y_train = split_data(train, 'Salary')
     X_test, y_test = split_data(test, 'Salary')
 
-    X_train_dict= {col: to_numpy_data(X_train, [col]) for col in categorical}
+    X_train_dict= {col: to_numpy_data(X_train, col) for col in categorical}
     X_train_dict['Numerical'] = to_numpy_data(X_train, numerical)
 
-    X_test_dict = {col: to_numpy_data(X_test, [col]) for col in categorical}
+    X_test_dict = {col: to_numpy_data(X_test, col) for col in categorical}
     X_test_dict['Numerical'] = to_numpy_data(X_test, numerical)
 
-    return X_train_dict, y_train, X_test_dict, y_test
+    return X_train_dict, y_train.values, X_test_dict, y_test.values
 
 
 
