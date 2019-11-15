@@ -3,6 +3,7 @@ from keras.layers import Dense,Input,Flatten,concatenate,Embedding, Dropout
 from sklearn.metrics import confusion_matrix, classification_report
 import pandas as pd
 import numpy as np
+import keras
 def get_model_Emb1():
     # Inputs
     Workclass = Input(shape=(1,), name='Workclass')
@@ -279,6 +280,8 @@ def evaluateSeqModel(X_test, y_test, model, name):
     report = classification_report(y_test, pred_class)
     cm = confusion_matrix(y_true=y_test, y_pred=pred_class)
     df = pd.DataFrame({'y_test': y_test.flatten(), 'y_predi': pred_class.flatten(), 'y_proba': pred.flatten()})
+    print(df.head())
+    # df.sort_values('y_proba', axis=0, ascending=False, inplace=True)
     print('Validaiton:')
     print(val)
     print('Clasifcation report:')
@@ -308,12 +311,11 @@ def evaluateSeqModel(X_test, y_test, model, name):
 def evaluateFunModel(X_test, y_test, model, name):
     val = model.evaluate(X_test, y_test)
     pred = model.predict(X_test)
-    pred_class = pred.argmax(axis=1) # different for functional model
-    # pred_class = np.argmax(pred,axis=1)
-    # proba = model.predict_proba(X_test)
+    pred_class = np.where(pred>=0.5,1,0)
     report = classification_report(y_test, pred_class)
     cm = confusion_matrix(y_true=y_test, y_pred=pred_class)
     df = pd.DataFrame({'y_test': y_test.flatten(), 'y_predi': np.array(pred_class).flatten(), 'y_proba': np.array(pred).flatten()})
+    # df.sort_values('y_proba', axis=0, ascending=False, inplace=True)
     print('Validaiton:')
     print(val)
     print('Clasifcation report:')
@@ -336,8 +338,6 @@ def evaluateFunModel(X_test, y_test, model, name):
         file.write('Prediction Classes')
         file.write('\n')
         file.write(df.to_string() + '\n\n')
-
-    # return y_test,pred_class,pred
 
 
 

@@ -1,28 +1,19 @@
-import ex2
 import numpy as np
 
-img_d1 = ex2.r_imd2D()
-f0 = ex2.r_filter0()
+# Working on 2D array
+array = np.arange(12).reshape(3, 4)
+print("INPUT ARRAY : \n", array)
 
-print(img_d1)
-print(f0)
+array2 = np.array([0.423097,0.664932,0.844051,0.006873,0.043565]).reshape(5,1) #reshape x,n
 
+# No axis mentioned, so works on entire array
+print("\nMax element : ", np.argmax(array))
 
-def iter_regions2D(image):
+# returning Indices of the max element
+# as per the indices
+print("\nIndices of Max element : ", np.argmax(array, axis=0))
+print("\nIndices of Max element : ", np.argmax(array, axis=-1))
 
-    h, w = image.shape # change to 3D
-    for y in range(h-2):
-        for x in range(w-2):
-            yield image[y:(y+3), x:(x+3)], y, x
-
-
-def forward(image):
-
-    h, w = image.shape
-    output = np.zeros((h, w))
-    for region, y, x in iter_regions2D(image):
-        output[y, x] = np.sum(region * f0)
-
-    return output
-
-zm1 = forward(img_d1)
+print(array2)
+print(array2.shape)
+print(np.argmax(array2,axis=-1))

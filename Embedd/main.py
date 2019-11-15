@@ -1,7 +1,8 @@
 from Embedd import modeler, dataproc
 import numpy as np
 import pandas as pd
-
+np.set_printoptions(edgeitems=10)
+np.core.arrayprint._line_width = 180
 np.set_printoptions(threshold=np.inf)
 from keras.models import Sequential, load_model, Model
 from sklearn.metrics import confusion_matrix
