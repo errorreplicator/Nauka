@@ -79,18 +79,25 @@ def array2frame(dict_name, dict):
     return df
 
 
-def dict2df(dict,dataFrame,del_categ=True):
-    for key in dict:
-        df = array2frame(key, dict[key][0])
+def weights2df(dataFrame,model_path,layers,del_categ=True):
+    from keras.models import load_model
+    #layers - list of embedding layers to extract embeddings values  weights = ['Workclass_emb','Education_emb','MaritalStatus_emb','Occupation_emb','Relationship_emb','Race_emb','Sex_emb','Country_emb']
+    model = load_model(model_path)
+    weight_dict = {}
+    for layer in layers:
+        weight_dict[layer] = model.get_layer(layer).get_weights()
+
+    for key in weight_dict:
+        df = array2frame(key, weight_dict[key][0])
         colnm = key[:-4]
         dataFrame = pd.merge(dataFrame, df, left_on=colnm, right_index=True)
         # dataFrame.drop(colnm,axis=1,inplace=True)
         if del_categ == True:
-            dataFrame.drop(colnm,axis=1,inplace=True)
+            dataFrame.drop(colnm, axis=1, inplace=True)
     return dataFrame
 
 
-def data_seq_swithOFF(categorical,numerical):
+def data_seq_swithOFF(categorical,numerical,numpyON = True):
     # categorical = ['Workclass', 'Education', 'MaritalStatus', 'Occupation', 'Relationship', 'Race', 'Sex', 'Country']
     # numerical = ['Age', 'EducationNum', 'CapitalGain', 'CapitalLoss', 'HoursWeek']
 
@@ -109,9 +116,9 @@ def data_seq_swithOFF(categorical,numerical):
 
     X_train, y_train = split_data(train, 'Salary')
     X_test, y_test = split_data(test, 'Salary')
-
-    X_train = to_numpy_data(X_train, X_train.columns)
-    X_test = to_numpy_data(X_test, X_test.columns)
+    if numpyON:
+        X_train = to_numpy_data(X_train, X_train.columns)
+        X_test = to_numpy_data(X_test, X_test.columns)
 
     return X_train,y_train.values, X_test, y_test.values
 

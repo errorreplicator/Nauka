@@ -230,7 +230,7 @@ def get_model_Emb1DropoutBIG():
     ])
 
     # main = Dropout(0.2)(concat_all)
-    main = Dense(1024, activation='relu')(concat_all)
+    main = Dense(128, activation='relu')(concat_all)
     main = Dropout(0.1)(main)
     main = Dense(512, activation='relu')(main)
     main = Dropout(0.1)(main)

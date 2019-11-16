@@ -28,23 +28,23 @@ weights = ['Workclass_emb','Education_emb','MaritalStatus_emb','Occupation_emb',
 
 ############ TRAIN SEQ with Embeddings in DATAFTAME##########################################
 
-# X_train, y_train, X_test, y_test = dataproc.dataframe_seq_swithOFF()
-# model = load_model('/home/piotr/data/test/model_300_swithOFF_EmbeddBIGDrop_batch32.h5')
-# weight_dict = {}
-# for layer in weights:
-#     weight_dict[layer] = model.get_layer(layer).get_weights()
-# df_train = dataproc.dict2df(weight_dict,X_train)
-# model_seq = modeler.get_model_Seq((56,))
-# model_seq.fit(df_train,y_train,epochs=100)
-# model_seq.save('/home/piotr/data/test/model_300_swithOFF_seq_embedd2DF.h5')
+X_train, y_train, X_test, y_test = dataproc.dataframe_seq_swithOFF()
+model = load_model('/home/piotr/data/test/model_300_swithOFF_EmbeddBIGDrop_batch32.h5')
+weight_dict = {}
+for layer in weights:
+    weight_dict[layer] = model.get_layer(layer).get_weights()
+df_train = dataproc.dict2df(weight_dict,X_train)
+model_seq = modeler.get_model_Seq((56,))
+model_seq.fit(df_train,y_train,epochs=100)
+model_seq.save('/home/piotr/data/test/model_300_swithOFF_seq_embedd2DF.h5')
 
 
-# print(df_train.head())
-# print([x for x in df_train.columns if x.startswith('W')])
-#
-# sumary = df_train.describe()
-# sumary = sumary.transpose()
-# print(sumary)
+print(df_train.head())
+print([x for x in df_train.columns if x.startswith('W')])
+
+sumary = df_train.describe()
+sumary = sumary.transpose()
+print(sumary)
 
 
 ###############TEST $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
