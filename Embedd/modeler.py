@@ -169,8 +169,11 @@ def get_model_Seq(shape):
 
     model.add(Dense(1024,input_shape=shape,activation='relu'))
     model.add(Dense(1024,activation='relu'))
+    model.add(Dropout(0.1))
     model.add(Dense(512, activation='relu'))
+    model.add(Dropout(0.1))
     model.add(Dense(128, activation='relu'))
+    model.add(Dropout(0.1))
     model.add(Dense(32, activation='relu'))
     model.add(Dense(1,activation='sigmoid'))
     model.compile(optimizer='adam',loss='binary_crossentropy',metrics=['accuracy'])
@@ -212,14 +215,14 @@ def get_model_Emb1DropoutBIG():
     Country_emb = Embedding(input_dim=42, output_dim=21, name='Country_emb')(Country)
 
     concat_emb = concatenate([
-        Flatten()(Workclass_emb)
-        , Flatten()(Education_emb)
-        , Flatten()(MaritalStatus_emb)
-        , Flatten()(Occupation_emb)
-        , Flatten()(Relationship_emb)
-        , Flatten()(Race_emb)
-        , Flatten()(Sex_emb)
-        , Flatten()(Country_emb)
+        Flatten(name='Workclass_flat')(Workclass_emb) # check how flatten looks like / meaning train again ???
+        , Flatten(name='Education_flat')(Education_emb)
+        , Flatten(name='MaritalStatus_flat')(MaritalStatus_emb)
+        , Flatten(name='Occupation_flat')(Occupation_emb)
+        , Flatten(name='Relationship_flat')(Relationship_emb)
+        , Flatten(name='Race_flat')(Race_emb)
+        , Flatten(name='Sex_flat')(Sex_emb)
+        , Flatten(name='Country_flat')(Country_emb)
     ])
 
     numerical = Dense(128, activation='relu')(Numerical)
@@ -227,7 +230,7 @@ def get_model_Emb1DropoutBIG():
     concat_all = concatenate([
         concat_emb
         , numerical
-    ])
+    ], name='concat_all')
 
     # main = Dropout(0.2)(concat_all)
     main = Dense(128, activation='relu')(concat_all)
@@ -250,19 +253,15 @@ def tester():
     Categorical = Input(shape=(51,), name='Categorical')
     Numerical = Input(shape=(5,), name='Numerical')
 
-    Mid_Categorical = Dense(1024, activation='relu')(Categorical)
+    Mid_Categorical = Dense(51, activation='relu')(Categorical)
 
     concat = concatenate([
         Mid_Categorical
         ,Numerical
     ])
 
-    main = Dense(1024, activation='relu')(concat)
-    main = Dropout(0.1)(main)
-    main = Dense(512, activation='relu')(main)
-    main = Dropout(0.1)(main)
-    main = Dense(128, activation='relu')(main)
-    main = Dropout(0.1)(main)
+    main = Dense(128, activation='relu')(concat)
+    main = Dense(64, activation='relu')(main)
     output = Dense(1, activation='sigmoid')(main)
 
     model = Model(inputs=[Categorical,Numerical],outputs=output)

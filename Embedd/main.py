@@ -16,75 +16,85 @@ numerical = ['Age','EducationNum','CapitalGain', 'CapitalLoss','HoursWeek']
 weights = ['Workclass_emb','Education_emb','MaritalStatus_emb','Occupation_emb','Relationship_emb','Race_emb','Sex_emb','Country_emb']
 
 
-# print(X_test.shape)
+def data_func_swithOFF(categorical,numerical,to_dict = True):
+    # categorical = ['Workclass', 'Education', 'MaritalStatus', 'Occupation', 'Relationship', 'Race', 'Sex', 'Country']
+    # numerical = ['Age', 'EducationNum', 'CapitalGain', 'CapitalLoss', 'HoursWeek']
+
+    train, test = dataproc.read_data()
+    train = train.drop(axis=0, index=19609)  # delete Holand one row wich breaks encodes as it does not live in test
+    train = dataproc.remove_data(train, 'Id')
+    test = dataproc.remove_data(test, 'Id')
+
+    train = dataproc.labelencoder(train, categorical)
+    test = dataproc.labelencoder(test, categorical)
+    train = dataproc.labelencoder(train, ['Salary'])
+    test = dataproc.labelencoder(test, ['Salary'])
+
+    train = dataproc.minmax_column(train, numerical)
+    test = dataproc.minmax_column(test, numerical)
+    train = train.iloc[:1]
+    X_train, y_train = dataproc.split_data(train, 'Salary')
+    X_test, y_test = dataproc.split_data(test, 'Salary')
+
+    if to_dict == True:
+        X_train = {col: dataproc.to_numpy_data(X_train, col) for col in categorical}
+        X_train['Numerical'] = dataproc.to_numpy_data(X_train, numerical)
+
+        X_test = {col: dataproc.to_numpy_data(X_test, col) for col in categorical}
+        X_test['Numerical'] = dataproc.to_numpy_data(X_test, numerical)
+
+    return X_train, y_train.values, X_test, y_test.values
 
 
 ###############Train Embeddings####################################################################
 
-# X_train, y_train, X_test, y_test = dataproc.data_func_swithOFF()
+epochs = 300
+model_name = f'fun_{epochs}_EmbeddSource_flatten_names'
+#
+# X_train, y_train,X_test,y_test = dataproc.data_func_swithOFF(categorical,numerical)
+#
 # model = modeler.get_model_Emb1DropoutBIG()
-# model.fit(X_train,y_train,epochs=300)
-# model.save('/home/piotr/data/test/model_300_swithOFF_EmbeddBIGDrop_batch32.h5')
+#
+# model.fit(X_train,y_train,epochs=epochs,batch_size=128)
+# model.save(f'/home/piotr/data/test/models/{model_name}.h5')
+# modeler.evaluateFunModel(X_test, y_test, model, model_name)
 
 ############ TRAIN SEQ with Embeddings in DATAFTAME##########################################
 
-X_train, y_train, X_test, y_test = dataproc.dataframe_seq_swithOFF()
-model = load_model('/home/piotr/data/test/model_300_swithOFF_EmbeddBIGDrop_batch32.h5')
-weight_dict = {}
-for layer in weights:
-    weight_dict[layer] = model.get_layer(layer).get_weights()
-df_train = dataproc.dict2df(weight_dict,X_train)
-model_seq = modeler.get_model_Seq((56,))
-model_seq.fit(df_train,y_train,epochs=100)
-model_seq.save('/home/piotr/data/test/model_300_swithOFF_seq_embedd2DF.h5')
+X_train,y_train,X_test,y_test = data_func_swithOFF(categorical,numerical,to_dict=False)
+
+print(X_train)
+
+model = load_model(f'/home/piotr/data/test/models/{model_name}.h5')
+
+print(X_train)
+
+X_train_dict = {col: dataproc.to_numpy_data(X_train, col) for col in categorical}
+X_train_dict['Numerical'] = dataproc.to_numpy_data(X_train, numerical)
 
 
-print(df_train.head())
-print([x for x in df_train.columns if x.startswith('W')])
-
-sumary = df_train.describe()
-sumary = sumary.transpose()
-print(sumary)
+def to_numpy_data(df, column_list):
+    return np.array(df[column_list])
 
 
-###############TEST $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
-# X_train, y_train, X_test, y_test = dataproc.dataframe_seq_swithOFF()
-# model = load_model('/home/piotr/data/test/model_300_swithOFF_EmbeddBIGDrop_batch32.h5')
-
-# check if encoding columns are deleted
-# check mean and std
-# check data X_train X_test
-# weight_dict = {}
-# for layer in weights:
-#     weight_dict[layer] = model.get_layer(layer).get_weights()
-# df_train = dataproc.dict2df(weight_dict,X_train)
-# df_test = dataproc.dict2df(weight_dict,X_test)
+embedding = model.get_layer('Sex_emb').get_weights()
+# flatten = model.get_layer('Sex_emb').output
 #
-# # model_test = load_model('/home/piotr/data/test/model_300_swithOFF_seq_embedd2DF.h5')
-# model_test = modeler.get_model_Seq((56,))
-# model_test.fit(df_train,y_train,epochs=300)
-# model_test.save('/home/piotr/data/test/model_Seq_300_trainONembedd.h5')
-# result = model_test.evaluate(df_test,y_test)
-# print(result)
-
-###################################### train vs test data comparision #############################
-
-X_train, y_train, X_test, y_test = dataproc.dataframe_seq_swithOFF(categorical,numerical=numerical)
-model = load_model('/home/piotr/data/test/model_300_swithOFF_EmbeddBIGDrop_batch32.h5')
-# print(X_test.head())
-# print(pd.value_counts(y_test))
-# print(3846/12435)
-weight_dict = {}
-for layer in weights:
-    weight_dict[layer] = model.get_layer(layer).get_weights()
-df_train = dataproc.dict2df(weight_dict,X_train)
-df_test = dataproc.dict2df(weight_dict,X_test)
-model = load_model('/home/piotr/data/test/model_Seq_300_trainONembedd.h5')
-# y_test = np.array(y_test)
-# y_test = y_test.reshape((1,-1))
+# concattenate = model.get_layer('concat_all').get_weights()
+#
+# print(flatten)
+# # print(concattenate)
 # print(model.summary())
-print(type(df_test.values))
-print(type(y_test.values))
-classes = model.predict_classes(df_test.values)
-print(classes)
+
+layer_name = 'concat_all'
+intermediate_layer_model = Model(inputs=model.input,
+                                 outputs=model.get_layer(layer_name).output)
+intermediate_output = intermediate_layer_model.predict(X_train_dict)
+print(embedding)
+print('$$$$$$$$$$$$$$$$$$$$$$$$$$')
+print(intermediate_output)
+
+
+##### TODO
+# Do not delete categorical only one hot encode or other idea and only add embedding representation 1.
+# bucketiz numerical values and embedd it as categorical 1. check if model can lern if YES 2. get embeddings to DF and try to learn
