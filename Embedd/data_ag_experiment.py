@@ -100,6 +100,7 @@ print(X_train.shape)
 
 
 
+
 # print(type(X_train))
 # print(X_train.shape)
 model = modeler.model_Fun_CNN1((X_train.shape[1],1))

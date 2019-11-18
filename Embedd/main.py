@@ -16,34 +16,6 @@ numerical = ['Age','EducationNum','CapitalGain', 'CapitalLoss','HoursWeek']
 weights = ['Workclass_emb','Education_emb','MaritalStatus_emb','Occupation_emb','Relationship_emb','Race_emb','Sex_emb','Country_emb']
 
 
-def data_func_swithOFF(categorical,numerical,to_dict = True):
-    # categorical = ['Workclass', 'Education', 'MaritalStatus', 'Occupation', 'Relationship', 'Race', 'Sex', 'Country']
-    # numerical = ['Age', 'EducationNum', 'CapitalGain', 'CapitalLoss', 'HoursWeek']
-
-    train, test = dataproc.read_data()
-    train = train.drop(axis=0, index=19609)  # delete Holand one row wich breaks encodes as it does not live in test
-    train = dataproc.remove_data(train, 'Id')
-    test = dataproc.remove_data(test, 'Id')
-
-    train = dataproc.labelencoder(train, categorical)
-    test = dataproc.labelencoder(test, categorical)
-    train = dataproc.labelencoder(train, ['Salary'])
-    test = dataproc.labelencoder(test, ['Salary'])
-
-    train = dataproc.minmax_column(train, numerical)
-    test = dataproc.minmax_column(test, numerical)
-    train = train.iloc[:1]
-    X_train, y_train = dataproc.split_data(train, 'Salary')
-    X_test, y_test = dataproc.split_data(test, 'Salary')
-
-    if to_dict == True:
-        X_train = {col: dataproc.to_numpy_data(X_train, col) for col in categorical}
-        X_train['Numerical'] = dataproc.to_numpy_data(X_train, numerical)
-
-        X_test = {col: dataproc.to_numpy_data(X_test, col) for col in categorical}
-        X_test['Numerical'] = dataproc.to_numpy_data(X_test, numerical)
-
-    return X_train, y_train.values, X_test, y_test.values
 
 
 ###############Train Embeddings####################################################################

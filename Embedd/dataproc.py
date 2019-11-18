@@ -91,13 +91,12 @@ def weights2df(dataFrame,model_path,layers,del_categ=True):
         df = array2frame(key, weight_dict[key][0])
         colnm = key[:-4]
         dataFrame = pd.merge(dataFrame, df, left_on=colnm, right_index=True)
-        # dataFrame.drop(colnm,axis=1,inplace=True)
-        if del_categ == True:
+        if del_categ == True: # Delete original category column or not?
             dataFrame.drop(colnm, axis=1, inplace=True)
     return dataFrame
 
 
-def data_seq_swithOFF(categorical,numerical,numpyON = True):
+def data_seq_swithOFF(categorical,numerical,numpyON = True,expandY = False):
     # categorical = ['Workclass', 'Education', 'MaritalStatus', 'Occupation', 'Relationship', 'Race', 'Sex', 'Country']
     # numerical = ['Age', 'EducationNum', 'CapitalGain', 'CapitalLoss', 'HoursWeek']
 
@@ -119,7 +118,9 @@ def data_seq_swithOFF(categorical,numerical,numpyON = True):
     if numpyON:
         X_train = to_numpy_data(X_train, X_train.columns)
         X_test = to_numpy_data(X_test, X_test.columns)
-
+    if expandY:
+        y_train = y_train.append(y_train)
+        y_test = y_test.append(y_test)
     return X_train,y_train.values, X_test, y_test.values
 
 def data_seq_swithON():
