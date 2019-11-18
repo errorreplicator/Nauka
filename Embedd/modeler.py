@@ -1,5 +1,5 @@
 from keras.models import Sequential, Model
-from keras.layers import Dense,Input,Flatten,concatenate,Embedding, Dropout
+from keras.layers import Dense,Input,Flatten,concatenate,Embedding, Dropout, Conv1D, MaxPool1D, Conv2D, MaxPool2D
 from sklearn.metrics import confusion_matrix, classification_report
 import pandas as pd
 import numpy as np
@@ -270,6 +270,22 @@ def tester():
 
     return model
 
+def model_Fun_CNN1(shape):
+    input = Input(shape=shape,name='Inputs')
+    model = Conv1D(1024, 2, activation='relu')(input)
+    model = MaxPool1D(2)(model)
+    model = Conv1D(512, 2, activation='relu')(model)
+    model = MaxPool1D(2)(model)
+    model = Conv1D(128, 2, activation='relu')(model)
+    model = MaxPool1D(2)(model)
+    model = Flatten()(model)
+    model = Dense(128,activation='relu')(model)
+    output = Dense(1,activation='sigmoid')(model)
+    model = Model(input,output)
+    model.compile(optimizer='rmsprop', loss='binary_crossentropy', metrics=['accuracy'])
+
+    return model
+
 
 def evaluateSeqModel(X_test, y_test, model, name):
     val = model.evaluate(X_test, y_test)
@@ -279,7 +295,7 @@ def evaluateSeqModel(X_test, y_test, model, name):
     report = classification_report(y_test, pred_class)
     cm = confusion_matrix(y_true=y_test, y_pred=pred_class)
     df = pd.DataFrame({'y_test': y_test.flatten(), 'y_predi': pred_class.flatten(), 'y_proba': pred.flatten()})
-    print(df.head())
+    # print(df.head())
     # df.sort_values('y_proba', axis=0, ascending=False, inplace=True)
     print('Validaiton:')
     print(val)

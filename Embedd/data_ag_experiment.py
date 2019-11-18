@@ -37,20 +37,20 @@ numerical = ['Age','EducationNum','CapitalGain', 'CapitalLoss','HoursWeek']
 #
 # modeler.evaluateSeqModel(X_test,y_test,model,model_name)
 ############################# Sequential Embedding ON ######################################################
-epochs = 500
-model_name = f'seq_{epochs}_EmbeddON'
-X_train,y_train,X_test,y_test = dataproc.data_seq_swithOFF(categorical,numerical,numpyON=False)
-weights_list = ['Workclass_emb','Education_emb','MaritalStatus_emb','Occupation_emb','Relationship_emb','Race_emb','Sex_emb','Country_emb']
-weights_path ='/home/piotr/data/test/models/fun_300_EmbeddSource_flatten_names.h5'
-
-X_train = dataproc.weights2df(X_train,weights_path,weights_list)
-X_test = dataproc.weights2df(X_test,weights_path,weights_list)
-
-model = modeler.get_model_Seq((56,))
-model.fit(X_train,y_train,epochs=epochs,batch_size=1024)
-model.save(f'/home/piotr/data/test/models/{model_name}.h5')
-
-modeler.evaluateSeqModel(X_test,y_test,model,model_name)
+# epochs =300
+# model_name = f'seq_{epochs}_EmbeddON_CNN_tester'
+# X_train,y_train,X_test,y_test = dataproc.data_seq_swithOFF(categorical,numerical,numpyON=False)
+# weights_list = ['Workclass_emb','Education_emb','MaritalStatus_emb','Occupation_emb','Relationship_emb','Race_emb','Sex_emb','Country_emb']
+# weights_path ='/home/piotr/data/test/models/fun_300_EmbeddSource_flatten_names.h5'
+#
+# X_train = dataproc.weights2df(X_train,weights_path,weights_list)
+# X_test = dataproc.weights2df(X_test,weights_path,weights_list)
+#
+# model = modeler.get_model_Seq((56,))
+# model.fit(X_train,y_train,epochs=epochs,batch_size=1024,validation_split=0.2)
+# model.save(f'/home/piotr/data/test/models/{model_name}.h5')
+#
+# modeler.evaluateSeqModel(X_test,y_test,model,model_name)
 ########################### Functional Embeddings ON########################################################
 # epochs = 200
 # model_name = f'fun_{epochs}_EmbeddONBIG_3run_128startlayer'
@@ -81,6 +81,32 @@ modeler.evaluateSeqModel(X_test,y_test,model,model_name)
 # model.fit([X_train_cat, X_train_num], y_train, epochs=epochs, batch_size=1024)
 # model.save(f'/home/piotr/data/test/models/{model_name}.h5')
 # modeler.evaluateFunModel([X_test_cat, X_test_num],y_test, model,model_name)
+
+################################ CNN ###############################################################
+
+epochs =100
+model_name = f'seq_{epochs}_EmbeddON_CNN_tester'
+X_train,y_train,X_test,y_test = dataproc.data_seq_swithOFF(categorical,numerical,numpyON=False)
+weights_list = ['Workclass_emb','Education_emb','MaritalStatus_emb','Occupation_emb','Relationship_emb','Race_emb','Sex_emb','Country_emb']
+weights_path ='/home/piotr/data/test/models/fun_300_EmbeddSource_flatten_names.h5'
+
+X_train = dataproc.weights2df(X_train,weights_path,weights_list)
+# print(X_train.head())
+X_test = dataproc.weights2df(X_test,weights_path,weights_list)
+X_train = dataproc.to_numpy_data(X_train,X_train.columns)
+print(X_train.shape)
+X_train =X_train.reshape(X_train.shape[0],X_train.shape[1],1)
+print(X_train.shape)
+
+
+
+# print(type(X_train))
+# print(X_train.shape)
+model = modeler.model_Fun_CNN1((X_train.shape[1],1))
+model.fit(X_train,y_train,epochs=epochs,batch_size=1024,validation_split=0.2)
+# model.save(f'/home/piotr/data/test/models/{model_name}.h5')
+#
+# modeler.evaluateSeqModel(X_test,y_test,model,model_name)
 
 
 

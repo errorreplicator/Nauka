@@ -98,3 +98,4 @@ print(intermediate_output)
 ##### TODO
 # Do not delete categorical only one hot encode or other idea and only add embedding representation 1.
 # bucketiz numerical values and embedd it as categorical 1. check if model can lern if YES 2. get embeddings to DF and try to learn
+# check google reuse embeddins
