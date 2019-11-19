@@ -20,7 +20,7 @@ def split_data(df, column_name):
 
     y_df = df[column_name]
     X_df = df.drop(column_name, axis=1)
-    return X_df,y_df
+    return X_df,y_df.values
 
 def remove_data(df, column_name):
 
@@ -41,7 +41,13 @@ def labelencoder_bycopy(df, column_list):
         df[f'{x}_encode'] = encoder.fit_transform(df.loc[:,x])
     return df
 
-def minmax_column(df_train,df_test, column_list):
+def minmax_column(df_train,column_list):
+    scaler = MinMaxScaler(feature_range=(0, 1))
+    scaler.fit(df_train[column_list])
+    df_train[column_list] = scaler.transform(df_train[column_list])
+    return df_train
+
+def minmax_column_double(df_train,df_test, column_list):
     scaler = MinMaxScaler(feature_range=(0, 1))
     scaler.fit(df_train[column_list])
     df_train[column_list] = scaler.transform(df_train[column_list])
@@ -100,6 +106,48 @@ def weights2df(dataFrame,model_path,layers,del_categ=True,normalize=False):
             dataFrame.drop(colnm, axis=1, inplace=True)
     return dataFrame
 
+def dataload_stage1(categorical,numerical,onehot=False):
+    train, test = read_data()
+    train['type'] = 'train'
+    test['type'] = 'test'
+
+    train.loc[train['Salary'] == ' <=50K', 'Salary'] = '<=50K'
+    train.loc[train['Salary'] == ' >50K', 'Salary'] = '>50K'
+
+    test.loc[test['Salary'] == ' <=50K.', 'Salary'] = '<=50K'
+    test.loc[test['Salary'] == ' >50K.', 'Salary'] = '>50K'
+    big_df = train.append(test)
+    big_df = remove_data(big_df, 'Id')
+    big_df = labelencoder(big_df, categorical)
+    big_df = labelencoder(big_df, ['Salary'])
+    big_df = minmax_column(big_df, numerical)
+    if onehot:
+        for col_name in categorical:
+            big_df = pd.concat([big_df, pd.get_dummies(big_df[col_name], prefix=col_name, dummy_na=False)], axis=1).drop([col_name],axis=1)
+    X_train = big_df.loc[big_df['type'] == 'train']
+    X_test = big_df.loc[big_df['type'] == 'test']
+    X_train.drop('type', axis=1, inplace=True)
+    X_test.drop('type', axis=1, inplace=True)
+
+    return X_train, X_test
+
+def fun_swithOFF(categorical, numerical, to_dict=True):
+
+    train,test = dataload_stage1(categorical,numerical,onehot=False)
+
+    X_train, y_train = split_data(train, 'Salary')
+    X_test, y_test = split_data(test, 'Salary')
+
+    if to_dict == True:
+        X_train_dict = {col: to_numpy_data(X_train, col) for col in categorical}
+        X_train_dict['Numerical'] = to_numpy_data(X_train, numerical)
+
+        X_test_dict = {col: to_numpy_data(X_test, col) for col in categorical}
+        X_test_dict['Numerical'] = to_numpy_data(X_test, numerical)
+
+        return X_train_dict, y_train, X_test_dict, y_test
+    else:
+        return X_train, y_train, X_test, y_test
 
 def data_seq_swithOFF(categorical,numerical,numpyON = True,expandY = False):
     # categorical = ['Workclass', 'Education', 'MaritalStatus', 'Occupation', 'Relationship', 'Race', 'Sex', 'Country']

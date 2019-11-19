@@ -70,28 +70,87 @@ pd.set_option('display.width', 200)
 # # model.save(f'/home/piotr/data/test/models/{model_name}.h5')
 #
 # # mod.evaluateSeqModel(X_test_weight,y_test,train_model,model_name)
-
+from Embedd import dataproc, modeler
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 scaler = MinMaxScaler(feature_range=(0, 1))
 
-X_train = [[2,5,2,7],[1,9,8,4],[6,8,3,1]]
-X_test = [[2,5,2,7],[1,9,8,4]]
-# print(scaler.fit_transform(X_train))
+categorical = ['Workclass', 'Education', 'MaritalStatus','Occupation','Relationship','Race','Sex','Country']
+numerical = ['Age','EducationNum','CapitalGain', 'CapitalLoss','HoursWeek']
 
-scaler.fit(X_train)
-X_train_trans = scaler.transform(X_train)
+train, test = dataproc.read_data()
+#16280
+# test = test.append(train.iloc[0]).reset_index() ## Copy 1st Train row to last test row to get comparison if all is correct # train 0 == test 16281
+# test.drop('index', axis=1,inplace=True)
 
-X_test_trains = scaler.transform(X_test)
-print(X_train_trans)
-print(X_test_trains)
+train['type'] = 'train'
+test['type'] = 'test'
 
-X_train = np.array(X_train)
-X_test = np.array(X_test)
-scaler.fit(X_train.T)
-X_train = scaler.transform(X_train.T).T
-print(X_train)
-X_test = scaler.transform(X_test.T).T
+train.loc[train['Salary'] == ' <=50K', 'Salary'] = '<=50K'
+train.loc[train['Salary'] == ' >50K', 'Salary'] = '>50K'
+
+test.loc[test['Salary'] == ' <=50K.','Salary'] = '<=50K'
+test.loc[test['Salary'] == ' >50K.','Salary'] = '>50K'
+print(train.head())
+print(test.head())
+
+big_df = train.append(test)
+
+big_df = dataproc.remove_data(big_df,'Id')
+big_df = dataproc.labelencoder(big_df,categorical)
+big_df = dataproc.labelencoder(big_df,['Salary'])
+big_df = dataproc.minmax_column(big_df,numerical)
+X_train = big_df.loc[big_df['type']=='train']
+X_test = big_df.loc[big_df['type']== 'test']
+X_train.drop('type',axis=1,inplace=True)
+X_test.drop('type',axis=1,inplace=True)
+print(X_train.head())
+print(X_test.head())
+
+tra, tes = dataproc.dataload_stage1(categorical,numerical)
+print(tra.head())
+print(tes.head())
+
+
+# train = dataproc.remove_data(train,'Id')
+# test =dataproc.remove_data(test,'Id')
+# train = dataproc.labelencoder(train,categorical)
+# test.set_value(16281, 'Salary', ' <=50K.')
+# # train = train.drop(axis=0, index=19609)
+# test = dataproc.labelencoder(test,categorical)
+# train = dataproc.labelencoder(train,['Salary'])
+# test = dataproc.labelencoder(test,['Salary'])
+# X_train, X_test = dataproc.minmax_column(train,test,numerical)
+#
+# print(X_train.head())
+# # print(X_test.head())
+# print(X_test.tail())
+
+
+
+
+
+
+
+
+
+# X_train = [[2,5,2,7],[1,9,8,4],[6,8,3,1]]
+# X_test = [[2,5,2,7],[1,9,8,4]]
+# # print(scaler.fit_transform(X_train))
+#
+# scaler.fit(X_train)
+# X_train_trans = scaler.transform(X_train)
+#
+# X_test_trains = scaler.transform(X_test)
+# print(X_train_trans)
+# print(X_test_trains)
+#
+# X_train = np.array(X_train)
+# X_test = np.array(X_test)
+# scaler.fit(X_train.T)
+# X_train = scaler.transform(X_train.T).T
+# print(X_train)
+# X_test = scaler.transform(X_test.T).T
 
 
 

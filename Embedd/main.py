@@ -20,8 +20,8 @@ weights = ['Workclass_emb','Education_emb','MaritalStatus_emb','Occupation_emb',
 
 ###############Train Embeddings####################################################################
 
-epochs = 300
-model_name = f'fun_{epochs}_EmbeddSource_flatten_names'
+# epochs = 300
+# model_name = f'fun_{epochs}_EmbeddSource_flatten_names'
 #
 # X_train, y_train,X_test,y_test = dataproc.data_func_swithOFF(categorical,numerical)
 #
@@ -31,43 +31,54 @@ model_name = f'fun_{epochs}_EmbeddSource_flatten_names'
 # model.save(f'/home/piotr/data/test/models/{model_name}.h5')
 # modeler.evaluateFunModel(X_test, y_test, model, model_name)
 
-############ TRAIN SEQ with Embeddings in DATAFTAME##########################################
+############ TRAIN SEQ stage 1 OFF embeddings OFF one hot##########################################
 
-X_train,y_train,X_test,y_test = data_func_swithOFF(categorical,numerical,to_dict=False)
-
-print(X_train)
-
-model = load_model(f'/home/piotr/data/test/models/{model_name}.h5')
-
-print(X_train)
-
-X_train_dict = {col: dataproc.to_numpy_data(X_train, col) for col in categorical}
-X_train_dict['Numerical'] = dataproc.to_numpy_data(X_train, numerical)
-
-
-def to_numpy_data(df, column_list):
-    return np.array(df[column_list])
-
-
-embedding = model.get_layer('Sex_emb').get_weights()
-# flatten = model.get_layer('Sex_emb').output
+# epochs = 300
+# model_name = f'seq_{epochs}_EmbedOFF_oneHotOFF_baseline'
 #
-# concattenate = model.get_layer('concat_all').get_weights()
+# train, test = dataproc.dataload_stage1(categorical,numerical)
+# X_train,y_train = dataproc.split_data(train,'Salary')
+# X_test, y_test = dataproc.split_data(test,'Salary')
 #
-# print(flatten)
-# # print(concattenate)
-# print(model.summary())
+# model = modeler.get_model_Seq((13,))
+# model.fit(X_train,y_train,epochs=epochs,batch_size=1024)
+# model.save(f'/home/piotr/data/test/models/{model_name}.h5')
+#
+# modeler.evaluateSeqModel(X_test, y_test, model, model_name)
 
-layer_name = 'concat_all'
-intermediate_layer_model = Model(inputs=model.input,
-                                 outputs=model.get_layer(layer_name).output)
-intermediate_output = intermediate_layer_model.predict(X_train_dict)
-print(embedding)
-print('$$$$$$$$$$$$$$$$$$$$$$$$$$')
-print(intermediate_output)
+############ TRAIN SEQ stage 1 OFF embeddings ON one hot##########################################
+
+# epochs = 300
+# model_name = f'seq_{epochs}_EmbedOFF_oneHotON_baseline'
+#
+# train, test = dataproc.dataload_stage1(categorical,numerical,onehot=True)
+# X_train,y_train = dataproc.split_data(train,'Salary')
+# X_test, y_test = dataproc.split_data(test,'Salary')
+#
+# model = modeler.get_model_Seq((107,))
+# model.fit(X_train,y_train,epochs=epochs,batch_size=1024)
+# model.save(f'/home/piotr/data/test/models/{model_name}.h5')
+#
+# modeler.evaluateSeqModel(X_test, y_test, model, model_name)
+
+############ TRAIN Embedding baseline ##########################################
+# epochs = 300
+# model_name = f'fun_{epochs}_Embeding_baseline'
+#
+# X_train,y_train,X_test,y_test = dataproc.fun_swithOFF(categorical,numerical,to_dict=True)
+#
+# model = modeler.get_model_Emb1Dropout()
+# model.fit(X_train,y_train,batch_size=1024,epochs=epochs)
+# model.save(f'/home/piotr/data/test/models/{model_name}.h5')
+#
+# modeler.evaluateFunModel(X_test,y_test,model,model_name)
+
+################### Embedding to DF ###########################################
 
 
-##### TODO
+
+
+##### TO DO
 # Do not delete categorical only one hot encode or other idea and only add embedding representation 1.
 # bucketiz numerical values and embedd it as categorical 1. check if model can lern if YES 2. get embeddings to DF and try to learn
 # check google reuse embeddins
