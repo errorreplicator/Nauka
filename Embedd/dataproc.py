@@ -41,20 +41,21 @@ def labelencoder_bycopy(df, column_list):
         df[f'{x}_encode'] = encoder.fit_transform(df.loc[:,x])
     return df
 
-def minmax_column(df, column_list):
-    scaler = MinMaxScaler()
-    scaler.fit(df[column_list])
-    df[column_list] = scaler.transform(df[column_list])
-    return df
+def minmax_column(df_train,df_test, column_list):
+    scaler = MinMaxScaler(feature_range=(0, 1))
+    scaler.fit(df_train[column_list])
+    df_train[column_list] = scaler.transform(df_train[column_list])
+    df_test[column_list] = scaler.transform(df_test[column_list])
+    return df_train, df_test
 
-def minmax_row(df, columns_list):
-    df_numpy = df[columns_list].to_numpy()
+def minmax_row(df_train, columns_list):
+    df_numpy = df_train[columns_list].to_numpy()
     scaler = MinMaxScaler(feature_range=(0, 1))
     scaler.fit(df_numpy.T)
     df_rescale = scaler.transform(df_numpy.T).T
-    df_rescale = pd.DataFrame(df_rescale, columns=columns_list, index=range(df.shape[0]))
-    df[columns_list] = df_rescale
-    return df
+    df_rescale = pd.DataFrame(df_rescale, columns=columns_list, index=range(df_train.shape[0]))
+    df_train[columns_list] = df_rescale
+    return df_train
 
 def to_numpy_data(df, column_list):
     return np.array(df[column_list])
@@ -79,7 +80,7 @@ def array2frame(dict_name, dict):
     return df
 
 
-def weights2df(dataFrame,model_path,layers,del_categ=True):
+def weights2df(dataFrame,model_path,layers,del_categ=True,normalize=False):
     from keras.models import load_model
     #layers - list of embedding layers to extract embeddings values  weights = ['Workclass_emb','Education_emb','MaritalStatus_emb','Occupation_emb','Relationship_emb','Race_emb','Sex_emb','Country_emb']
     model = load_model(model_path)
@@ -91,6 +92,10 @@ def weights2df(dataFrame,model_path,layers,del_categ=True):
         df = array2frame(key, weight_dict[key][0])
         colnm = key[:-4]
         dataFrame = pd.merge(dataFrame, df, left_on=colnm, right_index=True)
+        if normalize:
+            dataFrame[colnm] += 1 ## Normalize categorical encoding
+            dvd = dataFrame[colnm].max() ## as above
+            dataFrame[colnm] /= dvd ## as above
         if del_categ == True: # Delete original category column or not?
             dataFrame.drop(colnm, axis=1, inplace=True)
     return dataFrame
@@ -110,8 +115,8 @@ def data_seq_swithOFF(categorical,numerical,numpyON = True,expandY = False):
     train = labelencoder(train, ['Salary'])
     test = labelencoder(test, ['Salary'])
 
-    train = minmax_column(train, numerical)
-    test = minmax_column(test, numerical)
+    train, test = minmax_column(train, test, numerical)
+    # test = minmax_column(test, numerical)
 
     X_train, y_train = split_data(train, 'Salary')
     X_test, y_test = split_data(test, 'Salary')
@@ -198,8 +203,8 @@ def data_func_swithOFF(categorical,numerical,to_dict = True):
     train = labelencoder(train, ['Salary'])
     test = labelencoder(test, ['Salary'])
 
-    train = minmax_column(train, numerical)
-    test = minmax_column(test, numerical)
+    train, test = minmax_column(train,test, numerical)
+    # test = minmax_column(test, numerical)
 
     X_train, y_train = split_data(train, 'Salary')
     X_test, y_test = split_data(test, 'Salary')
@@ -211,8 +216,9 @@ def data_func_swithOFF(categorical,numerical,to_dict = True):
         X_test_dict = {col: to_numpy_data(X_test, col) for col in categorical}
         X_test_dict['Numerical'] = to_numpy_data(X_test, numerical)
 
-    return X_train_dict, y_train.values, X_test_dict, y_test.values
-
+        return X_train_dict, y_train.values, X_test_dict, y_test.values
+    else:
+        return X_train, y_train.values, X_test, y_test.values
 
 
 def data_func_swithONscaleROW():

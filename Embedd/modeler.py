@@ -250,10 +250,10 @@ def get_model_Emb1DropoutBIG():
     return model
 
 def tester():
-    Categorical = Input(shape=(51,), name='Categorical')
-    Numerical = Input(shape=(5,), name='Numerical')
+    Categorical = Input(shape=(59,), name='Categorical')
+    Numerical = Input(shape=(5,), name='Numerical') #5+8
 
-    Mid_Categorical = Dense(51, activation='relu')(Categorical)
+    Mid_Categorical = Dense(59, activation='relu')(Categorical)
 
     concat = concatenate([
         Mid_Categorical
