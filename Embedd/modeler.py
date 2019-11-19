@@ -319,7 +319,7 @@ def evaluateSeqModel(X_test, y_test, model, name):
         file.write('Prediction Classes')
         file.write('\n')
         file.write(df.to_string() + '\n\n')
-
+    model.save(f'/home/piotr/data/test/models/{name}.h5')
     # return y_test,pred_class,pred
 
 
@@ -354,6 +354,7 @@ def evaluateFunModel(X_test, y_test, model, name):
         file.write('\n')
         file.write(df.to_string() + '\n\n')
 
+    model.save(f'/home/piotr/data/test/models/{name}.h5')
 
 
 

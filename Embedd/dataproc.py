@@ -104,10 +104,12 @@ def weights2df(dataFrame,model_path,layers,del_categ=True,normalize=False):
             dataFrame[colnm] /= dvd ## as above
         if del_categ == True: # Delete original category column or not?
             dataFrame.drop(colnm, axis=1, inplace=True)
+    dataFrame.sort_index(inplace=True)
     return dataFrame
 
 def dataload_stage1(categorical,numerical,onehot=False):
     train, test = read_data()
+    # test = test.append(train.iloc[1]).reset_index() # spy from train to test dataset to check embeddings reset_index creates 'index' column !!!!!!!!!!!!!!!!
     train['type'] = 'train'
     test['type'] = 'test'
 
