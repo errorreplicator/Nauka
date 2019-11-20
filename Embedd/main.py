@@ -71,37 +71,60 @@ weights = ['Workclass_emb','Education_emb','MaritalStatus_emb','Occupation_emb',
 # modeler.evaluateFunModel(X_test,y_test,model,model_name)
 
 ###################SEQ Embedding to DF ###########################################
+# epochs = 300
+# model_name = f'seq_{epochs}_Embeding_toDF'
+# embedding_model = '/home/piotr/data/test/models/fun_300_Embeding_baseline.h5'
+# train, test = dataproc.dataload_stage1(categorical,numerical)
+#
+# # print(train.head())
+# X_train = dataproc.weights2df(train,embedding_model,weights,del_categ=True,normalize=False)
+# X_test = dataproc.weights2df(test,embedding_model,weights,del_categ=True,normalize=False)
+#
+# X_train,y_train = dataproc.split_data(X_train,'Salary')
+# X_test, y_test = dataproc.split_data(X_test,'Salary')
+#
+#
+# # X_train.to_csv('/home/piotr/data/test/models/train.csv')
+# # X_test.to_csv('/home/piotr/data/test/models/test.csv')
+# model = modeler.get_model_Seq((56,))
+# model.fit(X_train,y_train,batch_size=1024,epochs=epochs)
+# modeler.evaluateSeqModel(X_test,y_test,model,model_name)
+
+
+
+################### CNN on Embeddings #############################################
+
 epochs = 300
-model_name = f'seq_{epochs}_Embeding_toDF'
+model_name = f'CNN_{epochs}_Embeding_toDF'
 embedding_model = '/home/piotr/data/test/models/fun_300_Embeding_baseline.h5'
 train, test = dataproc.dataload_stage1(categorical,numerical)
 
 # print(train.head())
 X_train = dataproc.weights2df(train,embedding_model,weights,del_categ=True,normalize=False)
 X_test = dataproc.weights2df(test,embedding_model,weights,del_categ=True,normalize=False)
-
 X_train,y_train = dataproc.split_data(X_train,'Salary')
 X_test, y_test = dataproc.split_data(X_test,'Salary')
+X_train = dataproc.to_numpy_data(X_train,X_train.columns)
+X_test = dataproc.to_numpy_data(X_test,X_test.columns)
+X_train =X_train.reshape(X_train.shape[0],X_train.shape[1],1)
+X_test = X_test.reshape(X_test.shape[0],X_test.shape[1],1)
 
-
-# X_train.to_csv('/home/piotr/data/test/models/train.csv')
-# X_test.to_csv('/home/piotr/data/test/models/test.csv')
-model = modeler.get_model_Seq((56,))
+model = modeler.model_Fun_CNN1((X_train.shape[1],1))
 model.fit(X_train,y_train,batch_size=1024,epochs=epochs)
-modeler.evaluateSeqModel(X_test,y_test,model,model_name)
+modeler.evaluateFunModel(X_test,y_test,model,model_name)
 
-
-
-###################SEQ Embedding to DF + not delete label encoded#############################
 
 
 ###################Fun Embedding to DF #############################
+#CNN ? try again CNN model with embedd to DF conv1D - DONE
+#try CNN after data switch
+#normalize row
+# try CNN again and other models
 #try simple embedding model with embedd to DF
-#CNN ? try again CNN model with embedd to DF conv1D
 #normalize embedding with other features so all is on the same scale (try sequential and functional)
 #try bucketizing numerical variables
 #switch data
-#try CNN after data switch
+###################SEQ Embedding to DF + not delete label encoded#############################
 
 
 
