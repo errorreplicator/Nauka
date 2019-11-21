@@ -94,30 +94,92 @@ weights = ['Workclass_emb','Education_emb','MaritalStatus_emb','Occupation_emb',
 
 ################### CNN on Embeddings #############################################
 
-epochs = 300
-model_name = f'CNN_{epochs}_Embeding_toDF'
-embedding_model = '/home/piotr/data/test/models/fun_300_Embeding_baseline.h5'
-train, test = dataproc.dataload_stage1(categorical,numerical)
+# epochs = 300
+# model_name = f'CNN_{epochs}_Embeding_toDF'
+# embedding_model = '/home/piotr/data/test/models/fun_300_Embeding_baseline.h5'
+# train, test = dataproc.dataload_stage1(categorical,numerical)
+#
+# # print(train.head())
+# X_train = dataproc.weights2df(train,embedding_model,weights,del_categ=True,normalize=False)
+# X_test = dataproc.weights2df(test,embedding_model,weights,del_categ=True,normalize=False)
+# X_train,y_train = dataproc.split_data(X_train,'Salary')
+# X_test, y_test = dataproc.split_data(X_test,'Salary')
+# X_train = dataproc.to_numpy_data(X_train,X_train.columns)
+# X_test = dataproc.to_numpy_data(X_test,X_test.columns)
+# X_train =X_train.reshape(X_train.shape[0],X_train.shape[1],1)
+# X_test = X_test.reshape(X_test.shape[0],X_test.shape[1],1)
+#
+# model = modeler.model_Fun_CNN1((X_train.shape[1],1))
+# model.fit(X_train,y_train,batch_size=1024,epochs=epochs)
+# modeler.evaluateFunModel(X_test,y_test,model,model_name)
 
+################### CNN on Embeddings swith ON#############################################
+
+# epochs = 300
+# model_name = f'CNN_{epochs}_Embeding_toDF_switchON_2run'
+# embedding_model = '/home/piotr/data/test/models/fun_300_Embeding_baseline.h5'
+# train, test = dataproc.dataload_stage1(categorical,numerical)
+#
+# numerical = ['Age','EducationNum','CapitalGain', 'CapitalLoss','HoursWeek','Salary']
+# X_train = dataproc.weights2df(train,embedding_model,weights,del_categ=True,normalize=False)
+# X_test = dataproc.weights2df(test,embedding_model,weights,del_categ=True,normalize=False)
+# # #MinMax rows ??
+#
+# X_train = dataproc.swith_merge(X_train,numerical)
+# X_test = dataproc.swith_merge(X_test,numerical)
+#
+# X_train,y_train = dataproc.split_data(X_train,'Salary')
+# X_test, y_test = dataproc.split_data(X_test,'Salary')
+#
+#
+# X_train = dataproc.to_numpy_data(X_train,X_train.columns)
+# X_test = dataproc.to_numpy_data(X_test,X_test.columns)
+# X_train =X_train.reshape(X_train.shape[0],X_train.shape[1],1)
+# X_test = X_test.reshape(X_test.shape[0],X_test.shape[1],1)
+#
+# model = modeler.model_Fun_CNN1((X_train.shape[1],1))
+# model.fit(X_train,y_train,batch_size=1024,epochs=epochs)
+# modeler.evaluateFunModel(X_test,y_test,model,model_name)
+
+################### CNN on Embeddings swith ON MinMax row#############################################
+
+epochs = 100
+model_name = f'CNN_{epochs}_Embeding_toDF_sithON_minmaxRow'
+# embedding_model = '/home/piotr/data/test/models/fun_300_Embeding_baseline.h5'
+# train, test = dataproc.dataload_with_minmaxrow(categorical,numerical)
 # print(train.head())
-X_train = dataproc.weights2df(train,embedding_model,weights,del_categ=True,normalize=False)
-X_test = dataproc.weights2df(test,embedding_model,weights,del_categ=True,normalize=False)
-X_train,y_train = dataproc.split_data(X_train,'Salary')
-X_test, y_test = dataproc.split_data(X_test,'Salary')
-X_train = dataproc.to_numpy_data(X_train,X_train.columns)
-X_test = dataproc.to_numpy_data(X_test,X_test.columns)
-X_train =X_train.reshape(X_train.shape[0],X_train.shape[1],1)
-X_test = X_test.reshape(X_test.shape[0],X_test.shape[1],1)
+# numerical = ['Age','EducationNum','CapitalGain', 'CapitalLoss','HoursWeek','Salary']
+# X_train = dataproc.weights2df(train,embedding_model,weights,del_categ=True,normalize=False)
+# X_test = dataproc.weights2df(test,embedding_model,weights,del_categ=True,normalize=False)
+#
+# print(X_train.head())
+#
+# X_train = dataproc.minmax_row(X_train,X_train.columns)
+# X_test = dataproc.minmax_row(X_test,X_test.columns)
+#
+# print(X_train.head())
+# print(X_test.tail())
 
-model = modeler.model_Fun_CNN1((X_train.shape[1],1))
-model.fit(X_train,y_train,batch_size=1024,epochs=epochs)
-modeler.evaluateFunModel(X_test,y_test,model,model_name)
 
-
+# X_train = dataproc.swith_merge(X_train,numerical)
+# X_test = dataproc.swith_merge(X_test,numerical)
+#
+# X_train,y_train = dataproc.split_data(X_train,'Salary')
+# X_test, y_test = dataproc.split_data(X_test,'Salary')
+#
+#
+# X_train = dataproc.to_numpy_data(X_train,X_train.columns)
+# X_test = dataproc.to_numpy_data(X_test,X_test.columns)
+# X_train =X_train.reshape(X_train.shape[0],X_train.shape[1],1)
+# X_test = X_test.reshape(X_test.shape[0],X_test.shape[1],1)
+#
+# model = modeler.model_Fun_CNN1((X_train.shape[1],1))
+# model.fit(X_train,y_train,batch_size=1024,epochs=epochs)
+# modeler.evaluateFunModel(X_test,y_test,model,model_name)
 
 ###################Fun Embedding to DF #############################
 #CNN ? try again CNN model with embedd to DF conv1D - DONE
-#try CNN after data switch
+#try CNN after data switch - DONE
 #normalize row
 # try CNN again and other models
 #try simple embedding model with embedd to DF

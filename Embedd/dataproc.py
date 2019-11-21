@@ -47,30 +47,27 @@ def minmax_column(df_train,column_list):
     df_train[column_list] = scaler.transform(df_train[column_list])
     return df_train
 
-def minmax_column_double(df_train,df_test, column_list):
-    scaler = MinMaxScaler(feature_range=(0, 1))
-    scaler.fit(df_train[column_list])
-    df_train[column_list] = scaler.transform(df_train[column_list])
-    df_test[column_list] = scaler.transform(df_test[column_list])
-    return df_train, df_test
 
-def minmax_row(df_train, columns_list):
-    df_numpy = df_train[columns_list].to_numpy()
+def minmax_row(df,columns): # columns - target variable or list of columns to be excluded from switch
+    columns_list = [col for col in df.columns if col not in columns]
+    print(columns_list)
+    df_numpy = df[columns_list].to_numpy()
     scaler = MinMaxScaler(feature_range=(0, 1))
     scaler.fit(df_numpy.T)
     df_rescale = scaler.transform(df_numpy.T).T
-    df_rescale = pd.DataFrame(df_rescale, columns=columns_list, index=range(df_train.shape[0]))
-    df_train[columns_list] = df_rescale
-    return df_train
+    df_rescale = pd.DataFrame(df_rescale, columns=columns_list, index=range(df.shape[0]))
+    df[columns_list] = df_rescale
+    return df
 
 def to_numpy_data(df, column_list):
     return np.array(df[column_list])
 
 
-def swith_merge(df, numerical):
-    numerical_rev = numerical[::-1]
+def swith_merge(df, column_list): #column_list == list of columns to be excluded from switch !! - provide [] if all columns switch
+    column_to_swith = [col for col in df.columns if col not in column_list]
+    column_rev = column_to_swith[::-1]
     df2 = df.copy()
-    df2[numerical] = df2[numerical_rev]
+    df2[column_to_swith] = df2[column_rev]
     df_return = df.append(df2).reset_index()
     df_return.drop('index',axis=1,inplace=True)
     return df_return
@@ -109,7 +106,6 @@ def weights2df(dataFrame,model_path,layers,del_categ=True,normalize=False):
 
 def dataload_stage1(categorical,numerical,onehot=False):
     train, test = read_data()
-    # test = test.append(train.iloc[1]).reset_index() # spy from train to test dataset to check embeddings reset_index creates 'index' column !!!!!!!!!!!!!!!!
     train['type'] = 'train'
     test['type'] = 'test'
 
@@ -118,11 +114,38 @@ def dataload_stage1(categorical,numerical,onehot=False):
 
     test.loc[test['Salary'] == ' <=50K.', 'Salary'] = '<=50K'
     test.loc[test['Salary'] == ' >50K.', 'Salary'] = '>50K'
+    # test = test.append(train.iloc[1]).reset_index() # spy from train to test dataset to check embeddings reset_index creates 'index' column !!!!!!!!!!!!!!!!
     big_df = train.append(test)
     big_df = remove_data(big_df, 'Id')
     big_df = labelencoder(big_df, categorical)
     big_df = labelencoder(big_df, ['Salary'])
     big_df = minmax_column(big_df, numerical)
+    if onehot:
+        for col_name in categorical:
+            big_df = pd.concat([big_df, pd.get_dummies(big_df[col_name], prefix=col_name, dummy_na=False)], axis=1).drop([col_name],axis=1)
+    X_train = big_df.loc[big_df['type'] == 'train']
+    X_test = big_df.loc[big_df['type'] == 'test']
+    X_train.drop('type', axis=1, inplace=True)
+    X_test.drop('type', axis=1, inplace=True)
+
+    return X_train, X_test
+
+def dataload_with_minmaxrow(categorical,numerical,onehot=False):
+    train, test = read_data()
+    train['type'] = 'train'
+    test['type'] = 'test'
+
+    train.loc[train['Salary'] == ' <=50K', 'Salary'] = '<=50K'
+    train.loc[train['Salary'] == ' >50K', 'Salary'] = '>50K'
+
+    test.loc[test['Salary'] == ' <=50K.', 'Salary'] = '<=50K'
+    test.loc[test['Salary'] == ' >50K.', 'Salary'] = '>50K'
+    # test = test.append(train.iloc[1]).reset_index() # spy from train to test dataset to check embeddings reset_index creates 'index' column !!!!!!!!!!!!!!!!
+    big_df = train.append(test)
+    big_df = remove_data(big_df, 'Id')
+    big_df = labelencoder(big_df, categorical)
+    big_df = labelencoder(big_df, ['Salary'])
+    big_df = minmax_row(big_df,['Salary'])
     if onehot:
         for col_name in categorical:
             big_df = pd.concat([big_df, pd.get_dummies(big_df[col_name], prefix=col_name, dummy_na=False)], axis=1).drop([col_name],axis=1)
