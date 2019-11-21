@@ -141,17 +141,75 @@ weights = ['Workclass_emb','Education_emb','MaritalStatus_emb','Occupation_emb',
 # model.fit(X_train,y_train,batch_size=1024,epochs=epochs)
 # modeler.evaluateFunModel(X_test,y_test,model,model_name)
 
-################### CNN on Embeddings swith ON MinMax row#############################################
+################### CNN on Embeddings swith OFF MinMax ALL#############################################
 
-epochs = 100
-model_name = f'CNN_{epochs}_Embeding_toDF_sithON_minmaxRow'
+# epochs = 200
+# model_name = f'CNN_{epochs}_Embeding_toDF_switchOFF_minmaxALLcolumns'
 # embedding_model = '/home/piotr/data/test/models/fun_300_Embeding_baseline.h5'
-# train, test = dataproc.dataload_with_minmaxrow(categorical,numerical)
-# print(train.head())
+#
+# X_train,X_test = dataproc.dataload_minmaxall(categorical,embedding_model,weights)
+#
+# # X_train,y_train = dataproc.split_data(X_train,'Salary')
+# X_test, y_test = dataproc.split_data(X_test,'Salary')
+#
+# X_train = dataproc.to_numpy_data(X_train,X_train.columns)
+# X_test = dataproc.to_numpy_data(X_test,X_test.columns)
+# X_train =X_train.reshape(X_train.shape[0],X_train.shape[1],1)
+# X_test = X_test.reshape(X_test.shape[0],X_test.shape[1],1)
+#
+# # print(X_train.iloc[:,:10].head(20))
+#
+# model = modeler.model_Fun_CNN1((X_train.shape[1],1))
+# model.fit(X_train,y_train,batch_size=1024,epochs=epochs)
+# modeler.evaluateFunModel(X_test,y_test,model,model_name)
+
+################### CNN on Embeddings swith ON MinMax ALL#############################################
+
+epochs = 300
+model_name = f'CNN_{epochs}_Embeding_toDF_switchON_minmaxALLcolumns'
+embedding_model = '/home/piotr/data/test/models/fun_300_Embeding_baseline.h5'
+
+X_train,X_test = dataproc.dataload_minmaxall(categorical,embedding_model,weights)
+
+
+X_train = dataproc.swith_merge(X_train,['Salary'])
+
+X_train,y_train = dataproc.split_data(X_train,'Salary')
+X_test, y_test = dataproc.split_data(X_test,'Salary')
+
+
+X_train = dataproc.to_numpy_data(X_train,X_train.columns)
+X_test = dataproc.to_numpy_data(X_test,X_test.columns)
+X_train =X_train.reshape(X_train.shape[0],X_train.shape[1],1)
+X_test = X_test.reshape(X_test.shape[0],X_test.shape[1],1)
+
+model = modeler.model_Fun_CNN1((X_train.shape[1],1))
+model.fit(X_train,y_train,batch_size=1024,epochs=epochs)
+modeler.evaluateFunModel(X_test,y_test,model,model_name)
+
+# CHECK WITH DO NOT DELETE CATEGORICAL FATHERS COLUMN
+# CHECK WITH DATA SWITH
+# CHECK WITH BIGGER MAX POOLING AND FILTERS 1st
+# print(bigi.head(20))
+# bigi = dataproc.weights2df(bigi,embedding_model,weights,del_categ=True,normalize=False)
+# minmax_columns = [col for col in bigi.columns if col not in ['type']]
+#
+# bigi = dataproc.minmax_column(bigi, minmax_columns)
+# X_train = bigi.loc[bigi['type'] == 'train']
+# X_test = bigi.loc[bigi['type'] == 'test']
+# X_train = dataproc.remove_data(X_train, 'type')
+# X_test = dataproc.remove_data(X_test,'type')
+# print([col for col in bigi.columns if col not in ['type']])
+
+
+# bigi = dataproc.minmax_row(bigi,['Salary'])
+# print(bigi.head(20))
+
+
 # numerical = ['Age','EducationNum','CapitalGain', 'CapitalLoss','HoursWeek','Salary']
 # X_train = dataproc.weights2df(train,embedding_model,weights,del_categ=True,normalize=False)
 # X_test = dataproc.weights2df(test,embedding_model,weights,del_categ=True,normalize=False)
-#
+
 # print(X_train.head())
 #
 # X_train = dataproc.minmax_row(X_train,X_train.columns)
@@ -185,7 +243,8 @@ model_name = f'CNN_{epochs}_Embeding_toDF_sithON_minmaxRow'
 #try simple embedding model with embedd to DF
 #normalize embedding with other features so all is on the same scale (try sequential and functional)
 #try bucketizing numerical variables
-#switch data
+###############################################3
+# Fractals to picture ==== base on corelation of features
 ###################SEQ Embedding to DF + not delete label encoded#############################
 
 

@@ -119,7 +119,7 @@ def dataload_stage1(categorical,numerical,onehot=False):
     big_df = remove_data(big_df, 'Id')
     big_df = labelencoder(big_df, categorical)
     big_df = labelencoder(big_df, ['Salary'])
-    big_df = minmax_column(big_df, numerical)
+    # big_df = minmax_column(big_df, numerical)
     if onehot:
         for col_name in categorical:
             big_df = pd.concat([big_df, pd.get_dummies(big_df[col_name], prefix=col_name, dummy_na=False)], axis=1).drop([col_name],axis=1)
@@ -129,8 +129,8 @@ def dataload_stage1(categorical,numerical,onehot=False):
     X_test.drop('type', axis=1, inplace=True)
 
     return X_train, X_test
-
-def dataload_with_minmaxrow(categorical,numerical,onehot=False):
+    # return big_df
+def dataload_minmaxall(categorical,embedding_model,weights):
     train, test = read_data()
     train['type'] = 'train'
     test['type'] = 'test'
@@ -145,16 +145,17 @@ def dataload_with_minmaxrow(categorical,numerical,onehot=False):
     big_df = remove_data(big_df, 'Id')
     big_df = labelencoder(big_df, categorical)
     big_df = labelencoder(big_df, ['Salary'])
-    big_df = minmax_row(big_df,['Salary'])
-    if onehot:
-        for col_name in categorical:
-            big_df = pd.concat([big_df, pd.get_dummies(big_df[col_name], prefix=col_name, dummy_na=False)], axis=1).drop([col_name],axis=1)
+    big_df = weights2df(big_df, embedding_model, weights, del_categ=True, normalize=False)
+    minmax_columns = [col for col in big_df.columns if col not in ['type']]
+
+    big_df = minmax_column(big_df, minmax_columns)
     X_train = big_df.loc[big_df['type'] == 'train']
     X_test = big_df.loc[big_df['type'] == 'test']
-    X_train.drop('type', axis=1, inplace=True)
-    X_test.drop('type', axis=1, inplace=True)
+    X_train = remove_data(X_train, 'type')
+    X_test = remove_data(X_test, 'type')
 
     return X_train, X_test
+
 
 def fun_swithOFF(categorical, numerical, to_dict=True):
 
