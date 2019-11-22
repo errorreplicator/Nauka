@@ -1,4 +1,5 @@
 from keras.models import Sequential, Model
+from keras.applications import VGG16
 from keras.layers import Dense,Input,Flatten,concatenate,Embedding, Dropout, Conv1D, MaxPool1D, Conv2D, MaxPool2D
 from sklearn.metrics import confusion_matrix, classification_report
 import pandas as pd
@@ -300,6 +301,22 @@ def model_Fun_CNN2(shape):
     model = Model(input,output)
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
+    return model
+
+
+def model_VGG16():
+    IMG_SHAPE = (7, 8, 1)
+    VGG16_MODEL = VGG16(input_shape=IMG_SHAPE, include_top=False,weights='imagenet')
+    model = Sequential(
+        [
+            VGG16_MODEL
+            ,Dense(512, activation='relu')
+            ,Dense(64, activation='relu')
+            ,Dense(1, activation='sigmoid')
+        ]
+    )
+
+    model.compile(optimizer='adam',loss='binary_crossentropy',metrics=['accuracy'])
     return model
 
 def evaluateSeqModel(X_test, y_test, model, name):

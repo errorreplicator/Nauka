@@ -188,8 +188,38 @@ weights = ['Workclass_emb','Education_emb','MaritalStatus_emb','Occupation_emb',
 
 ################### CNN2D on Embeddings swith ON MinMax ALL#############################################
 
+# epochs = 100
+# model_name = f'CNN2D_{epochs}_Embeding_toDF_switchON_minmaxALL'
+# embedding_model = '/home/piotr/data/test/models/fun_300_Embeding_baseline.h5'
+# batch_size = 1024
+# X_train,X_test = dataproc.dataload_minmaxall(categorical,embedding_model,weights)
+#
+#
+# X_train = dataproc.swith_merge(X_train,['Salary'])
+#
+# X_train,y_train = dataproc.split_data(X_train,'Salary')
+# X_test, y_test = dataproc.split_data(X_test,'Salary')
+#
+#
+# X_train = dataproc.to_numpy_data(X_train,X_train.columns)
+# X_test = dataproc.to_numpy_data(X_test,X_test.columns)
+#
+# print(X_train[0].shape)
+# print(X_train[0].shape)
+# X_train =X_train.reshape(-1,7,8,1)
+# X_test = X_test.reshape(-1,7,8,1)
+# print(X_train.shape)
+# print(X_train[0].shape)
+# # print(X_train[0][0])
+# model = modeler.model_Fun_CNN2((7,8,1))
+# model.fit(X_train,y_train,batch_size=batch_size,epochs=epochs)
+# modeler.evaluateFunModel(X_test,y_test,model,model_name)
+
+
+################### VGG16 on Embeddings swith ON MinMax ALL#############################################
+
 epochs = 100
-model_name = f'CNN2D_{epochs}_Embeding_toDF_switchON_minmaxALL'
+model_name = f'VGG16_{epochs}_Embeding_toDF_switchON_minmaxALL'
 embedding_model = '/home/piotr/data/test/models/fun_300_Embeding_baseline.h5'
 batch_size = 1024
 X_train,X_test = dataproc.dataload_minmaxall(categorical,embedding_model,weights)
@@ -204,17 +234,20 @@ X_test, y_test = dataproc.split_data(X_test,'Salary')
 X_train = dataproc.to_numpy_data(X_train,X_train.columns)
 X_test = dataproc.to_numpy_data(X_test,X_test.columns)
 
-print(X_train[0].shape)
-print(X_train[0].shape)
+# print(X_train[0].shape)
+# print(X_train[0].shape)
 X_train =X_train.reshape(-1,7,8,1)
 X_test = X_test.reshape(-1,7,8,1)
-print(X_train.shape)
-print(X_train[0].shape)
+# print(X_train.shape)
+# print(X_train[0].shape)
 # print(X_train[0][0])
-model = modeler.model_Fun_CNN2((7,8,1))
+model = modeler.model_VGG16()
 model.fit(X_train,y_train,batch_size=batch_size,epochs=epochs)
 # modeler.evaluateFunModel(X_test,y_test,model,model_name)
 
+
+
+# VGG16 ????
 # Check corelation diagram
 # check how CNN2 works on 10*bigger image ??? - try freez 1st layers ? try more conv layers
 # Order columns according to correlation so they have more sense next to each other
