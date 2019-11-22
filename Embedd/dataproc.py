@@ -146,7 +146,7 @@ def dataload_minmaxall(categorical,embedding_model,weights):
     big_df = labelencoder(big_df, categorical)
     big_df = labelencoder(big_df, ['Salary'])
     big_df = weights2df(big_df, embedding_model, weights, del_categ=True, normalize=False)
-    minmax_columns = [col for col in big_df.columns if col not in ['type']]
+    minmax_columns = [col for col in big_df.columns if col not in ['type','Salary']]
 
     big_df = minmax_column(big_df, minmax_columns)
     X_train = big_df.loc[big_df['type'] == 'train']

@@ -1,7 +1,8 @@
-from  Embedd import dataproc
-import Embedd.modeler as mod
+from  Embedd import dataproc, modeler, experiment
 import numpy as np
 import pandas as pd
+from PIL import Image
+
 from keras.models import load_model
 np.set_printoptions(edgeitems=10)
 np.core.arrayprint._line_width = 180
@@ -10,21 +11,21 @@ pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 14)
 pd.set_option('display.width', 200)
 
-d1 = {'a': [1,2,3,4],'b': [5,6,7,8],'c':[7,33,22,11]}
-d2 = {'a': [22,23],'b':[24,25]}
+embedding_model = '/home/piotr/data/test/models/fun_300_Embeding_baseline.h5'
+categorical = ['Workclass', 'Education', 'MaritalStatus','Occupation','Relationship','Race','Sex','Country']
+numerical = ['Age','EducationNum','CapitalGain', 'CapitalLoss','HoursWeek']
+weights = ['Workclass_emb','Education_emb','MaritalStatus_emb','Occupation_emb','Relationship_emb','Race_emb','Sex_emb','Country_emb']
 
-df1 = pd.DataFrame(d1)
-df2 = pd.DataFrame(d2)
+X_train, X_test = experiment.dataload_minmaxall(categorical,embedding_model,weights)
+X_train,y_train = dataproc.split_data(X_train,'Salary')
+X_test, y_test = dataproc.split_data(X_test,'Salary')
 
-# print(df1.shape)
-# df = dataproc.swith_merge(df1,[])
+X_train = dataproc.to_numpy_data(X_train,X_train.columns)
+X_test = dataproc.to_numpy_data(X_test,X_test.columns)
 
-df = dataproc.minmax_row(df1,[])
-print(df)
+X_train =X_train.reshape(-1,7,8)
 
-
-
-
+experiment.img_save(X_train,10,500)
 
 
 

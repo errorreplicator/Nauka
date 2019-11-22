@@ -272,20 +272,35 @@ def tester():
 
 def model_Fun_CNN1(shape):
     input = Input(shape=shape,name='Inputs')
-    model = Conv1D(1024, 2, activation='relu')(input)
-    model = MaxPool1D(2)(model)
-    model = Conv1D(512, 2, activation='relu')(model)
-    model = MaxPool1D(2)(model)
-    model = Conv1D(128, 2, activation='relu')(model)
-    model = MaxPool1D(2)(model)
+    model = Conv1D(1024, 5, activation='relu')(input)
+    model = MaxPool1D(3)(model)
+    model = Conv1D(512, 4, activation='relu')(model)
+    model = MaxPool1D(3)(model)
+    model = Conv1D(128, 4, activation='relu')(model)
+    # model = MaxPool1D(2)(model)
     model = Flatten()(model)
     model = Dense(128,activation='relu')(model)
     output = Dense(1,activation='sigmoid')(model)
     model = Model(input,output)
-    model.compile(optimizer='rmsprop', loss='binary_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
     return model
 
+def model_Fun_CNN2(shape):
+    input = Input(shape=shape,name='Inputs')
+    model = Conv2D(128,kernel_size=(3,3), activation='relu')(input)
+    model = MaxPool2D((2,2))(model)
+    # model = Conv2D(128, kernel_size=(3,3), activation='relu')(model)
+    # model = MaxPool2D((2,2))(model)
+    # model = Conv2D(32, kernel_size=(3,3), activation='relu')(model)
+    # model = MaxPool2D((2,2))(model)
+    model = Flatten()(model)
+    model = Dense(64,activation='relu')(model)
+    output = Dense(1,activation='sigmoid')(model)
+    model = Model(input,output)
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+
+    return model
 
 def evaluateSeqModel(X_test, y_test, model, name):
     val = model.evaluate(X_test, y_test)

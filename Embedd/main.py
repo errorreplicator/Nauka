@@ -90,8 +90,6 @@ weights = ['Workclass_emb','Education_emb','MaritalStatus_emb','Occupation_emb',
 # model.fit(X_train,y_train,batch_size=1024,epochs=epochs)
 # modeler.evaluateSeqModel(X_test,y_test,model,model_name)
 
-
-
 ################### CNN on Embeddings #############################################
 
 # epochs = 300
@@ -163,12 +161,37 @@ weights = ['Workclass_emb','Education_emb','MaritalStatus_emb','Occupation_emb',
 # model.fit(X_train,y_train,batch_size=1024,epochs=epochs)
 # modeler.evaluateFunModel(X_test,y_test,model,model_name)
 
-################### CNN on Embeddings swith ON MinMax ALL#############################################
+################### CNN1D on Embeddings swith ON MinMax ALL#############################################
 
-epochs = 300
-model_name = f'CNN_{epochs}_Embeding_toDF_switchON_minmaxALLcolumns'
+# epochs = 100
+# model_name = f'CNN_{epochs}_Embeding_toDF_switchON_minmaxALL_filter5'
+# embedding_model = '/home/piotr/data/test/models/fun_300_Embeding_baseline.h5'
+# batch_size = 1024
+# X_train,X_test = dataproc.dataload_minmaxall(categorical,embedding_model,weights)
+#
+#
+# X_train = dataproc.swith_merge(X_train,['Salary'])
+#
+# X_train,y_train = dataproc.split_data(X_train,'Salary')
+# X_test, y_test = dataproc.split_data(X_test,'Salary')
+#
+#
+# X_train = dataproc.to_numpy_data(X_train,X_train.columns)
+# X_test = dataproc.to_numpy_data(X_test,X_test.columns)
+# X_train =X_train.reshape(X_train.shape[0],X_train.shape[1],1)
+# X_test = X_test.reshape(X_test.shape[0],X_test.shape[1],1)
+#
+# model = modeler.model_Fun_CNN1((X_train.shape[1],1))
+# model.fit(X_train,y_train,batch_size=batch_size,epochs=epochs) # ADAM was better [0.3315874114509048, 0.8546772310953601]
+# modeler.evaluateFunModel(X_test,y_test,model,model_name)
+
+
+################### CNN2D on Embeddings swith ON MinMax ALL#############################################
+
+epochs = 100
+model_name = f'CNN2D_{epochs}_Embeding_toDF_switchON_minmaxALL'
 embedding_model = '/home/piotr/data/test/models/fun_300_Embeding_baseline.h5'
-
+batch_size = 1024
 X_train,X_test = dataproc.dataload_minmaxall(categorical,embedding_model,weights)
 
 
@@ -180,16 +203,28 @@ X_test, y_test = dataproc.split_data(X_test,'Salary')
 
 X_train = dataproc.to_numpy_data(X_train,X_train.columns)
 X_test = dataproc.to_numpy_data(X_test,X_test.columns)
-X_train =X_train.reshape(X_train.shape[0],X_train.shape[1],1)
-X_test = X_test.reshape(X_test.shape[0],X_test.shape[1],1)
 
-model = modeler.model_Fun_CNN1((X_train.shape[1],1))
-model.fit(X_train,y_train,batch_size=1024,epochs=epochs)
-modeler.evaluateFunModel(X_test,y_test,model,model_name)
+print(X_train[0].shape)
+print(X_train[0].shape)
+X_train =X_train.reshape(-1,7,8,1)
+X_test = X_test.reshape(-1,7,8,1)
+print(X_train.shape)
+print(X_train[0].shape)
+# print(X_train[0][0])
+model = modeler.model_Fun_CNN2((7,8,1))
+model.fit(X_train,y_train,batch_size=batch_size,epochs=epochs)
+# modeler.evaluateFunModel(X_test,y_test,model,model_name)
 
+# Check corelation diagram
+# check how CNN2 works on 10*bigger image ??? - try freez 1st layers ? try more conv layers
+# Order columns according to correlation so they have more sense next to each other
+# after ordering think to make perfect square with width of longest vector and fill zeros for all shorter vectors (fill with zeros or noise ?)
+# CHECK - other data agumentation techniques
 # CHECK WITH DO NOT DELETE CATEGORICAL FATHERS COLUMN
 # CHECK WITH DATA SWITH
 # CHECK WITH BIGGER MAX POOLING AND FILTERS 1st
+# apply other picture agumentation technics
+# all to picture
 # print(bigi.head(20))
 # bigi = dataproc.weights2df(bigi,embedding_model,weights,del_categ=True,normalize=False)
 # minmax_columns = [col for col in bigi.columns if col not in ['type']]
