@@ -15,18 +15,25 @@ categorical = ['Workclass', 'Education', 'MaritalStatus','Occupation','Relations
 numerical = ['Age','EducationNum','CapitalGain', 'CapitalLoss','HoursWeek']
 weights = ['Workclass_emb','Education_emb','MaritalStatus_emb','Occupation_emb','Relationship_emb','Race_emb','Sex_emb','Country_emb']
 
+dataproc.fix_seeds(1)
+
 ###############Train Embeddings####################################################################
 
-# epochs = 300
-# model_name = f'fun_{epochs}_EmbeddSource_flatten_names'
+epochs = 300
+model_name = f'fun_{epochs}_EmbeddSource_2'
+
+X_train, X_test = dataproc.dataload_stage1(categorical,numerical,onehot=False)
+
+X_train, y_train = dataproc.split_data(X_train,'Salary')
+X_test, y_test = dataproc.split_data(X_test,'Salary')
+
+X_train = dataproc.data_tomodel(X_train,categorical,numerical)
+X_test = dataproc.data_tomodel(X_test,categorical,numerical)
+
+model = modeler.get_model_Emb1DropoutBIG()
 #
-# X_train, y_train,X_test,y_test = dataproc.data_func_swithOFF(categorical,numerical)
-#
-# model = modeler.get_model_Emb1DropoutBIG()
-#
-# model.fit(X_train,y_train,epochs=epochs,batch_size=128)
-# model.save(f'/home/piotr/data/test/models/{model_name}.h5')
-# modeler.evaluateFunModel(X_test, y_test, model, model_name)
+model.fit(X_train,y_train,epochs=epochs,batch_size=128)
+modeler.evaluateFunModel(X_test, y_test, model, model_name)
 
 ############ TRAIN SEQ stage 1 OFF embeddings OFF one hot##########################################
 
@@ -218,34 +225,34 @@ weights = ['Workclass_emb','Education_emb','MaritalStatus_emb','Occupation_emb',
 
 ################### VGG16 on Embeddings swith ON MinMax ALL#############################################
 
-epochs = 100
-model_name = f'VGG16_{epochs}_Embeding_toDF_switchON_minmaxALL'
-embedding_model = '/home/piotr/data/test/models/fun_300_Embeding_baseline.h5'
-batch_size = 1024
-X_train,X_test = dataproc.dataload_minmaxall(categorical,embedding_model,weights)
+# epochs = 100
+# model_name = f'VGG16_{epochs}_Embeding_toDF_switchON_minmaxALL'
+# embedding_model = '/home/piotr/data/test/models/fun_300_Embeding_baseline.h5'
+# batch_size = 1024
+# X_train,X_test = dataproc.dataload_minmaxall(categorical,embedding_model,weights)
+#
+#
+# X_train = dataproc.swith_merge(X_train,['Salary'])
+#
+# X_train,y_train = dataproc.split_data(X_train,'Salary')
+# X_test, y_test = dataproc.split_data(X_test,'Salary')
+#
+#
+# X_train = dataproc.to_numpy_data(X_train,X_train.columns)
+# X_test = dataproc.to_numpy_data(X_test,X_test.columns)
+#
+# # print(X_train[0].shape)
+# # print(X_train[0].shape)
+# X_train =X_train.reshape(-1,7,8,1)
+# X_test = X_test.reshape(-1,7,8,1)
+# # print(X_train.shape)
+# # print(X_train[0].shape)
+# # print(X_train[0][0])
+# model = modeler.model_VGG16()
+# model.fit(X_train,y_train,batch_size=batch_size,epochs=epochs)
+# # modeler.evaluateFunModel(X_test,y_test,model,model_name)
 
-
-X_train = dataproc.swith_merge(X_train,['Salary'])
-
-X_train,y_train = dataproc.split_data(X_train,'Salary')
-X_test, y_test = dataproc.split_data(X_test,'Salary')
-
-
-X_train = dataproc.to_numpy_data(X_train,X_train.columns)
-X_test = dataproc.to_numpy_data(X_test,X_test.columns)
-
-# print(X_train[0].shape)
-# print(X_train[0].shape)
-X_train =X_train.reshape(-1,7,8,1)
-X_test = X_test.reshape(-1,7,8,1)
-# print(X_train.shape)
-# print(X_train[0].shape)
-# print(X_train[0][0])
-model = modeler.model_VGG16()
-model.fit(X_train,y_train,batch_size=batch_size,epochs=epochs)
-# modeler.evaluateFunModel(X_test,y_test,model,model_name)
-
-
+#################END##END##END##END######################################
 
 # VGG16 ????
 # Check corelation diagram

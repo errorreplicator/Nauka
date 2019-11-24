@@ -320,6 +320,7 @@ def model_VGG16():
     return model
 
 def evaluateSeqModel(X_test, y_test, model, name):
+    model.save(f'/home/piotr/data/test/models/{name}.h5')
     val = model.evaluate(X_test, y_test)
     pred = model.predict(X_test)
     pred_class = model.predict_classes(X_test)
@@ -356,6 +357,7 @@ def evaluateSeqModel(X_test, y_test, model, name):
 
 
 def evaluateFunModel(X_test, y_test, model, name):
+    model.save(f'/home/piotr/data/test/models/{name}.h5')
     val = model.evaluate(X_test, y_test)
     pred = model.predict(X_test)
     pred_class = np.where(pred>=0.5,1,0)
