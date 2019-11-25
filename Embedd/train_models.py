@@ -17,24 +17,6 @@ weights = ['Workclass_emb','Education_emb','MaritalStatus_emb','Occupation_emb',
 
 dataproc.fix_seeds(1)
 
-###############Train Embeddings####################################################################
-
-epochs = 300
-model_name = f'fun_{epochs}_EmbeddSource_2'
-
-X_train, X_test = dataproc.dataload_stage1(categorical,numerical,onehot=False)
-
-X_train, y_train = dataproc.split_data(X_train,'Salary')
-X_test, y_test = dataproc.split_data(X_test,'Salary')
-
-X_train = dataproc.data_tomodel(X_train,categorical,numerical)
-X_test = dataproc.data_tomodel(X_test,categorical,numerical)
-
-model = modeler.get_model_Emb1DropoutBIG()
-#
-model.fit(X_train,y_train,epochs=epochs,batch_size=128)
-modeler.evaluateFunModel(X_test, y_test, model, model_name)
-
 ############ TRAIN SEQ stage 1 OFF embeddings OFF one hot##########################################
 
 # epochs = 300

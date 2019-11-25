@@ -140,7 +140,7 @@ def dataload_stage1(categorical,numerical,onehot=False):
     X_test.drop('type', axis=1, inplace=True)
 
     return X_train, X_test
-    # return big_df
+
 def dataload_minmaxall(categorical,embedding_model,weights):
     train, test = read_data()
     train['type'] = 'train'
