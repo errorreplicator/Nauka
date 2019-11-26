@@ -162,7 +162,7 @@ weights = ['Workclass_emb','Education_emb','MaritalStatus_emb','Occupation_emb',
 # model.fit([X_train_pixels,X_train_numerical],y_train,batch_size=batch_size,epochs=epochs)
 # modeler.evaluateFunModel([X_test_pixels,X_test_numerical],y_test,model,model_name)
 
-################### CNN2D + Dense on Embeddings swith ON MinMax ALL#############################################
+#################### CNN2D + Dense on Embeddings swith ON MinMax ALL#############################################
 import numpy as np
 embedding_model = '/home/piotr/data/test/models/fun_50_EmbeddSource_picture.h5'
 epochs = 100
