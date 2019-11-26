@@ -251,7 +251,6 @@ def get_model_Emb1DropoutBIG():
 
     return model
 
-
 def get_model_Emb1DropoutBIG_corr(): # model with corrections
     # Inputs
     Workclass = Input(shape=(1,), name='Workclass')
@@ -273,6 +272,63 @@ def get_model_Emb1DropoutBIG_corr(): # model with corrections
     Race_emb = Embedding(input_dim=5, output_dim=3, name='Race_emb')(Race)
     # Sex_emb = Embedding(input_dim=2, output_dim=2, name='Sex_emb')(Sex)
     Country_emb = Embedding(input_dim=42, output_dim=30, name='Country_emb')(Country)
+
+    concat_emb = concatenate([
+        Flatten(name='Workclass_flat')(Workclass_emb) # check how flatten looks like / meaning train again ???
+        , Flatten(name='Education_flat')(Education_emb)
+        , Flatten(name='MaritalStatus_flat')(MaritalStatus_emb)
+        , Flatten(name='Occupation_flat')(Occupation_emb)
+        , Flatten(name='Relationship_flat')(Relationship_emb)
+        , Flatten(name='Race_flat')(Race_emb)
+        # , Flatten(name='Sex_flat')(Sex_emb)
+        , Flatten(name='Country_flat')(Country_emb)
+    ])
+
+    numerical = Dense(128, activation='relu')(Numerical)
+
+    concat_all = concatenate([
+        concat_emb
+        , numerical
+    ], name='concat_all')
+
+    # main = Dropout(0.2)(concat_all)
+    main = Dense(128, activation='relu')(concat_all)
+    main = Dropout(0.1)(main)
+    main = Dense(512, activation='relu')(main)
+    main = Dropout(0.1)(main)
+    main = Dense(128, activation='relu')(main)
+    main = Dropout(0.1)(main)
+    output = Dense(1, activation='sigmoid')(main)
+
+    model = Model(
+        inputs=[Workclass, Education, MaritalStatus, Occupation, Relationship, Race, Country,Numerical],
+        outputs=output)
+
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+
+    return model
+
+def exp_model_Emb1DropoutBIG_corr(): # model with corrections
+    # Inputs
+    Workclass = Input(shape=(1,), name='Workclass')
+    Education = Input(shape=(1,), name='Education')
+    MaritalStatus = Input(shape=(1,), name='MaritalStatus')
+    Occupation = Input(shape=(1,), name='Occupation')
+    Relationship = Input(shape=(1,), name='Relationship')
+    Race = Input(shape=(1,), name='Race')
+    # Sex = Input(shape=(1,), name='Sex')
+    Country = Input(shape=(1,), name='Country')
+    Numerical = Input(shape=(5,), name='Numerical')
+
+    # Embeddigs
+    Workclass_emb = Embedding(input_dim=9, output_dim=20, name='Workclass_emb')(Workclass)
+    Education_emb = Embedding(input_dim=26, output_dim=50, name='Education_emb')(Education)
+    MaritalStatus_emb = Embedding(input_dim=7, output_dim=15, name='MaritalStatus_emb')(MaritalStatus)
+    Occupation_emb = Embedding(input_dim=15, output_dim=30, name='Occupation_emb')(Occupation)
+    Relationship_emb = Embedding(input_dim=6, output_dim=10, name='Relationship_emb')(Relationship)
+    Race_emb = Embedding(input_dim=5, output_dim=10, name='Race_emb')(Race)
+    # Sex_emb = Embedding(input_dim=2, output_dim=2, name='Sex_emb')(Sex)
+    Country_emb = Embedding(input_dim=42, output_dim=50, name='Country_emb')(Country)
 
     concat_emb = concatenate([
         Flatten(name='Workclass_flat')(Workclass_emb) # check how flatten looks like / meaning train again ???
@@ -352,14 +408,15 @@ def model_Fun_CNN1(shape):
 
 def model_Fun_CNN2(shape):
     input = Input(shape=shape,name='Inputs')
-    model = Conv2D(128,kernel_size=(3,3), activation='relu')(input)
+    model = Conv2D(256,kernel_size=(3,3), activation='relu')(input)
     model = MaxPool2D((2,2))(model)
     # model = Conv2D(128, kernel_size=(3,3), activation='relu')(model)
     # model = MaxPool2D((2,2))(model)
     # model = Conv2D(32, kernel_size=(3,3), activation='relu')(model)
     # model = MaxPool2D((2,2))(model)
     model = Flatten()(model)
-    model = Dense(64,activation='relu')(model)
+    model = Dense(128,activation='relu')(model)
+    model = Dense(64, activation='relu')(model)
     output = Dense(1,activation='sigmoid')(model)
     model = Model(input,output)
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
@@ -367,17 +424,23 @@ def model_Fun_CNN2(shape):
     return model
 
 
-def model_VGG16():
-    IMG_SHAPE = (7, 8, 1)
-    VGG16_MODEL = VGG16(input_shape=IMG_SHAPE, include_top=False,weights='imagenet')
-    model = Sequential(
-        [
-            VGG16_MODEL
-            ,Dense(512, activation='relu')
-            ,Dense(64, activation='relu')
-            ,Dense(1, activation='sigmoid')
-        ]
-    )
+def model_CNN_Dense(CNN_shape, Dense_shape):
+    input_CNN = Input(CNN_shape)
+    model_CNN = Conv2D(256, kernel_size=(3, 3), activation='relu')(input_CNN)
+    model_CNN = MaxPool2D((2, 2))(model_CNN)
+    model_CNN = Flatten()(model_CNN)
+    model_CNN = Dense(128, activation='relu')(model_CNN)
+    model_CNN = Dense(64, activation='relu')(model_CNN)
+
+    input_Dense = Input(Dense_shape)
+    model_Dense = Dense(256,activation='relu')(input_Dense)
+    model_Dense = Dense(128,activation='relu')(model_Dense)
+    model_Dense = Dense(64,activation='relu')(model_Dense)
+    merge = concatenate([model_CNN,model_Dense])
+    intermid = Dense(64,activation='relu')(merge)
+    output = Dense(1,activation='sigmoid')(intermid)
+    model = Model(inputs = [input_CNN,input_Dense],output=output)
+
 
     model.compile(optimizer='adam',loss='binary_crossentropy',metrics=['accuracy'])
     return model
