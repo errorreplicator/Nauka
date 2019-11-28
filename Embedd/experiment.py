@@ -8,7 +8,7 @@ def minmax_column(df_train,column_list):
     return df_train
 
 
-def dataload_minmaxall(categorical,embedding_model,weights):
+def dataload_minmaxall(categorical,numerical,embedding_model,weights):
     train, test = dataproc.read_data()
     train['type'] = 'train'
     test['type'] = 'test'
@@ -24,9 +24,11 @@ def dataload_minmaxall(categorical,embedding_model,weights):
     big_df = dataproc.labelencoder(big_df, categorical)
     big_df = dataproc.labelencoder(big_df, ['Salary'])
     big_df = dataproc.weights2df(big_df, embedding_model, weights, del_categ=True, normalize=False)
-    minmax_columns = [col for col in big_df.columns if col not in ['type','Salary']]
+    exclude_cols = ['type','Salary','Sex'] + numerical # do not use for 0,255 minmax normalization
+    minmax_columns = [col for col in big_df.columns if col not in exclude_cols]
 
-    big_df = minmax_column(big_df, minmax_columns)
+    big_df = minmax_column(big_df, minmax_columns) # for 0,255 norm
+    big_df = dataproc.minmax_column(big_df,numerical) # for 0,1 norm
     X_train = big_df.loc[big_df['type'] == 'train']
     X_test = big_df.loc[big_df['type'] == 'test']
     X_train = dataproc.remove_data(X_train, 'type')
