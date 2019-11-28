@@ -12,18 +12,18 @@ dataproc.fix_seeds(1)
 # dim3 = np.concatenate((tmp,tmp,tmp))
 #
 # test = dim3.reshape(-1,3,3,3)
-l1 = ['3','5']
-l2 = ['4','2']
-l3 = l1 + l2
-print(l3)
+# l1 = ['3','5']
+# l2 = ['4','2']
+# l3 = l1 + l2
+# print(l3)
 
-img = Image.open('/home/piotr/Pictures/embedding.png')
+img = Image.open('/home/piotr/Pictures/1.png')
 # vgg16.preprocess_input(img, mode='tf')
 # print(img)
 img = img_to_array(img)
-# print(img.shape)
-# print(type(img))
-# print(img)
+print(img.shape)
+print(type(img))
+print(img)
 # img_prep = preprocess_input(img)
 # print(img_prep)
 

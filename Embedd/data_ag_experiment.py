@@ -118,21 +118,34 @@ X_train_pixels = dataproc.to_numpy_data(X_train_pixels,X_train_pixels.columns)
 X_train_numerical = dataproc.to_numpy_data(X_train_numerical,X_train_numerical.columns)
 X_test_pixels = dataproc.to_numpy_data(X_test_pixels,X_test_pixels.columns)
 X_test_numerical = dataproc.to_numpy_data(X_test_numerical,X_test_numerical.columns)
+howmany_z = 1
+zeros = np.zeros((X_train_pixels.shape[0],howmany_z))
+images = np.concatenate((X_train_pixels,zeros),1)
+test_img = images[0].reshape(5,10,1)
+experiment.img_save(test_img,1)
+# get example of immage from array - why it saves 5 pictures instead of 1 ???
+# sh = 10
+# count_zeros = sh*sh-49#2500-49
+# X_train_pixels = experiment.make_vgg_picB(X_train_pixels[:2],count_zeros,sh,sh)
+# experiment.img_save()
+# X_test_pixels = experiment.make_vgg_pic(X_test_pixels,count_zeros,sh,sh)
 
 
-train_zeros = np.zeros((X_train_pixels.shape[0],1))
-test_zeros = np.zeros((X_test_pixels.shape[0],1))
-# print(train_zeros)
 
-X_train_pixels = np.concatenate((X_train_pixels,train_zeros),1)
-X_test_pixels = np.concatenate((X_test_pixels,test_zeros),1)
-print(X_test_pixels.shape)
-X_train_pixels =X_train_pixels.reshape(-1,10,5,1)
-X_test_pixels = X_test_pixels.reshape(-1,10,5,1)
-img_array = img_to_array(X_train_pixels[0])
-print(img_array.shape)
+# model = modeler.model_VGG16_Dense(CNN_shape=(sh,sh,3),Dense_shape=(6,))
+# model.fit([X_train_pixels,X_train_numerical],y_train,batch_size=batch_size,epochs=epochs)
+# modeler.evaluateFunModel([X_test_pixels,X_test_numerical],y_test,model,model_name)
 
-img_rgb = np.repeat(img_array,3,-1) # ughhhh
+#
+# X_train_pixels = np.concatenate((X_train_pixels,train_zeros),1)
+# X_test_pixels = np.concatenate((X_test_pixels,test_zeros),1)
+# print(X_test_pixels.shape)
+# X_train_pixels =X_train_pixels.reshape(-1,10,5,1)
+# X_test_pixels = X_test_pixels.reshape(-1,10,5,1)
+# img_array = img_to_array(X_train_pixels[0])
+# print(img_array.shape)
+
+# img_rgb = np.repeat(img_array,3,-1) # ughhhh
 
 
 from keras import backend as K
@@ -149,10 +162,10 @@ from keras import backend as K
 
 
 
-img = preprocess_input(img_rgb)
-print(img.shape)
-print(img)
-
+# img = preprocess_input(img_rgb)
+# print(img.shape)
+# print(img)
+#
 
 
 

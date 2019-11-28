@@ -447,7 +447,8 @@ def model_CNN_Dense(CNN_shape, Dense_shape):
 
 def model_VGG16_Dense(CNN_shape, Dense_shape):
     input_CNN = Input(CNN_shape)
-    VGG16_MODEL = VGG16(include_top=False,weights='imagenet')(input_CNN)
+    # VGG16_MODEL = VGG16(include_top=False,weights='imagenet')(input_CNN)
+    VGG16_MODEL = VGG16(include_top=False)(input_CNN)
     model_VGG16 = Flatten()(VGG16_MODEL)
     model_VGG16 = Dense(128, activation='relu')(model_VGG16)
     model_VGG16 = Dense(64, activation='relu')(model_VGG16)
