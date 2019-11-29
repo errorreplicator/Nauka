@@ -461,7 +461,7 @@ def model_VGG16_Dense(CNN_shape, Dense_shape):
     model_Dense = Dense(64,activation='relu')(model_Dense)
     model_Dense = Dense(8, activation='relu')(model_Dense)
     merge = concatenate([model_VGG16,model_Dense])
-    intermid = Dense(32,activation='relu')(merge)
+    intermid = Dense(4,activation='relu')(merge)
     output = Dense(1,activation='sigmoid')(intermid)
     model = Model(inputs = [input_CNN,input_Dense],output=output)
 
