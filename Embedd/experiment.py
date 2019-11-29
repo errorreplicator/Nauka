@@ -36,49 +36,33 @@ def dataload_minmaxall(categorical,numerical,embedding_model,weights):
 
     return X_train, X_test
 
-def make_vgg_pic(numpy_array, howmany_z, a,b):
-    import numpy as np
-    from keras.applications.vgg16 import  preprocess_input
-    from keras.preprocessing.image import img_to_array
-    zeros = np.zeros((numpy_array.shape[0], howmany_z)) # fill in with zeros to make picture
-    image = np.concatenate((numpy_array, zeros),1)
-    image = image.reshape(-1,a,b,1)
-    # image = np.repeat(image, 3, -1)
-    # print(image[0].shape)
-    image_array = []
-    for im in image:
-        image_array.append(img_to_array(im))
-    image_array = np.array(image_array)
-    image_array = np.repeat(image_array,3,-1)
-    image_array = preprocess_input(image_array)
-    # print(image_array[0].shape)
-    return image_array
-
-def make_vgg_picB(numpy_array, howmany_z, a,b):
+def make_vgg_pic(numpy_array, howmany_z, a, b):
     import numpy as np
     from keras.applications.vgg16 import  preprocess_input
     from keras.preprocessing.image import img_to_array
     from keras.preprocessing.image import save_img
-    zeros = np.zeros((numpy_array.shape[0], howmany_z)) # fill in with zeros to make picture
-    image = np.concatenate((numpy_array, zeros),1)
+    # zeros = np.zeros((numpy_array.shape[0], howmany_z)) # fill in with zeros to make picture
+    fill = np.full((numpy_array.shape[0],howmany_z),255.)
+    image = np.concatenate((numpy_array, fill),1)
     image = image.reshape(-1,a,b,1)
+    image = np.tile(A=image, reps=[1, 3])
     # image = np.repeat(image, 3, -1)
-    print(image[0])
-    imgs = []
-    for im in image:
-        img = img_to_array(im)
-        img = np.repeat(img,3,-1)
-        # img = np.expand_dims(img,axis=0)
-        # img = preprocess_input(img)
-        # save_img('/home/piotr/Pictures/xcx.png',img[0])
-        imgs.append(img)
-    image_array = np.concatenate(imgs,axis=0)
-    img_save(image,10)
+    # print(image[0])
+    # imgs = []
+    # for im in image:
+    #     img = img_to_array(im)
+    #     img = np.repeat(img,3,-1)
+    #     # img = np.expand_dims(img,axis=0)
+    #     # img = preprocess_input(img)
+    #     # save_img('/home/piotr/Pictures/xcx.png',img[0])
+    #     imgs.append(img)
+    # image_array = np.concatenate(imgs,axis=0)
+    # img_save(image,10)
     # image_array = np.array(image_array)
     # image_array = np.repeat(image_array,3,-1)#####????????
-    # image_array = preprocess_input(image_array)
+    # image = preprocess_input(image)
     # print(image_array[0].shape)
-    # return image_array
+    return image/255
 
 def img_save(numpy_array,ratio=1,stop=None):
     for index,single in enumerate(numpy_array):

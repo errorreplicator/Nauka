@@ -94,7 +94,7 @@ weights = ['Workclass_emb','Education_emb','MaritalStatus_emb','Occupation_emb',
 #########################VGG16 + Dense Numerical || minmax (0,255)#################################3
 
 embedding_model = '/home/piotr/data/test/models/fun_50_EmbeddSource.h5'
-epochs = 100
+epochs = 50
 model_name = f'picture_baseline_{epochs}_Embeding_VGG16andDense'
 batch_size = 32
 X_train,X_test = experiment.dataload_minmaxall(categorical,numerical,embedding_model,weights)
@@ -107,65 +107,31 @@ X_train_pixels = X_train[pixels]
 X_train_numerical = X_train[numerical_col]
 X_test_pixels = X_test[pixels]
 X_test_numerical = X_test[numerical_col]
-
-X_test_numerical.drop('Salary',axis=1,inplace=True)
-X_train_numerical.drop('Salary',axis=1,inplace=True)
-
-_,y_train = dataproc.split_data(X_train,'Salary')
-_, y_test = dataproc.split_data(X_test,'Salary')
+# print(X_test_pixels.tail(4))
+# print(X_train_numerical.tail(4))
+# X_test_numerical.drop('Salary',axis=1,inplace=True)
+# X_train_numerical.drop('Salary',axis=1,inplace=True)
+X_train_numerical,y_train = dataproc.split_data(X_train_numerical,'Salary')
+X_test_numerical, y_test = dataproc.split_data(X_test_numerical,'Salary')
 
 X_train_pixels = dataproc.to_numpy_data(X_train_pixels,X_train_pixels.columns)
 X_train_numerical = dataproc.to_numpy_data(X_train_numerical,X_train_numerical.columns)
 X_test_pixels = dataproc.to_numpy_data(X_test_pixels,X_test_pixels.columns)
 X_test_numerical = dataproc.to_numpy_data(X_test_numerical,X_test_numerical.columns)
-howmany_z = 1
-zeros = np.zeros((X_train_pixels.shape[0],howmany_z))
-images = np.concatenate((X_train_pixels,zeros),1)
-test_img = images[0].reshape(5,10,1)
-experiment.img_save(test_img,1)
-# get example of immage from array - why it saves 5 pictures instead of 1 ???
-# sh = 10
-# count_zeros = sh*sh-49#2500-49
-# X_train_pixels = experiment.make_vgg_picB(X_train_pixels[:2],count_zeros,sh,sh)
-# experiment.img_save()
-# X_test_pixels = experiment.make_vgg_pic(X_test_pixels,count_zeros,sh,sh)
+# print(X_train_pixels[-1])
+# print(y_train[-4:])
+sh = 40
+count_zeros = sh*sh-49#2500-49
+X_train_pixels = experiment.make_vgg_pic(X_train_pixels, count_zeros, sh, sh)
+X_test_pixels = experiment.make_vgg_pic(X_test_pixels, count_zeros, sh, sh)
+
+# print(X_train_pixels[-1])
+
+model = modeler.model_VGG16_Dense(CNN_shape=(sh,sh,3),Dense_shape=(6,))
+model.fit([X_train_pixels,X_train_numerical],y_train,batch_size=batch_size,epochs=epochs)
+modeler.evaluateFunModel([X_test_pixels,X_test_numerical],y_test,model,model_name)
 
 
-
-# model = modeler.model_VGG16_Dense(CNN_shape=(sh,sh,3),Dense_shape=(6,))
-# model.fit([X_train_pixels,X_train_numerical],y_train,batch_size=batch_size,epochs=epochs)
-# modeler.evaluateFunModel([X_test_pixels,X_test_numerical],y_test,model,model_name)
-
-#
-# X_train_pixels = np.concatenate((X_train_pixels,train_zeros),1)
-# X_test_pixels = np.concatenate((X_test_pixels,test_zeros),1)
-# print(X_test_pixels.shape)
-# X_train_pixels =X_train_pixels.reshape(-1,10,5,1)
-# X_test_pixels = X_test_pixels.reshape(-1,10,5,1)
-# img_array = img_to_array(X_train_pixels[0])
-# print(img_array.shape)
-
-# img_rgb = np.repeat(img_array,3,-1) # ughhhh
-
-
-from keras import backend as K
-
-# def preprocess(img):
-#     img4d = img.copy()
-#     img4d = img4d.astype("float64")
-#     if K.image_dim_ordering() == "th":
-#         # (H, W, C) -> (C, H, W)
-#         img4d = img4d.transpose((2, 0, 1))
-#     img4d = np.expand_dims(img4d, axis=0)
-#     img4d = preprocess_input(img4d)
-#     return img4d
-
-
-
-# img = preprocess_input(img_rgb)
-# print(img.shape)
-# print(img)
-#
 
 
 
