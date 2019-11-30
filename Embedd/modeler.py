@@ -1,6 +1,6 @@
 from keras.models import Sequential, Model
 from keras.applications import VGG16
-from keras.layers import Dense,Input,Flatten,concatenate,Embedding, Dropout, Conv1D, MaxPool1D, Conv2D, MaxPool2D
+from keras.layers import Dense,Input,Flatten,concatenate,Embedding, Dropout, Conv1D, MaxPool1D, Conv2D, MaxPool2D, BatchNormalization
 from sklearn.metrics import confusion_matrix, classification_report
 import pandas as pd
 import numpy as np
@@ -435,6 +435,43 @@ def model_CNN_Dense(CNN_shape, Dense_shape):
     input_Dense = Input(Dense_shape)
     model_Dense = Dense(256,activation='relu')(input_Dense)
     model_Dense = Dense(128,activation='relu')(model_Dense)
+    model_Dense = Dense(64,activation='relu')(model_Dense)
+    merge = concatenate([model_CNN,model_Dense])
+    intermid = Dense(64,activation='relu')(merge)
+    output = Dense(1,activation='sigmoid')(intermid)
+    model = Model(inputs = [input_CNN,input_Dense],output=output)
+
+
+    model.compile(optimizer='adam',loss='binary_crossentropy',metrics=['accuracy'])
+    return model
+
+def model_CNN_Dense_antyoverfeet(CNN_shape, Dense_shape):
+    input_CNN = Input(CNN_shape)
+    model_CNN = Conv2D(256, kernel_size=(3, 3), activation='relu')(input_CNN)
+    model_CNN = MaxPool2D((2, 2))(model_CNN)
+    model_CNN = Conv2D(128, kernel_size=(3, 3), activation='relu')(model_CNN)
+    model_CNN = MaxPool2D((2, 2))(model_CNN)
+    model_CNN = Conv2D(64, kernel_size=(3, 3), activation='relu')(model_CNN)
+    model_CNN = MaxPool2D((2, 2))(model_CNN)
+    model_CNN = Conv2D(32, kernel_size=(3, 3), activation='relu')(model_CNN)
+    model_CNN = BatchNormalization()(model_CNN)
+    model_CNN = MaxPool2D((2, 2))(model_CNN)
+    model_CNN = Dropout(0.1)(model_CNN)
+    model_CNN = Flatten()(model_CNN)
+    model_CNN = Dense(32, activation='relu')(model_CNN)
+    model_CNN = Dense(16, activation='relu')(model_CNN)
+    model_CNN = Dense(2, activation='softmax')(model_CNN)
+
+    input_Dense = Input(Dense_shape)
+    model_Dense = Dense(128,activation='relu')(input_Dense)
+    model_Dense = BatchNormalization()(model_Dense)
+    model_Dense = Dropout(0.1)(model_Dense)
+    model_Dense = Dense(128, activation='relu')(model_Dense)
+    model_Dense = BatchNormalization()(model_Dense)
+    model_Dense = Dropout(0.1)(model_Dense)
+    model_Dense = Dense(128, activation='relu')(model_Dense)
+    model_Dense = BatchNormalization()(model_Dense)
+    model_Dense = Dropout(0.1)(model_Dense)
     model_Dense = Dense(64,activation='relu')(model_Dense)
     merge = concatenate([model_CNN,model_Dense])
     intermid = Dense(64,activation='relu')(merge)

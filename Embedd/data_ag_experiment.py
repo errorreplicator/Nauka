@@ -28,7 +28,7 @@ weights = ['Workclass_emb','Education_emb','MaritalStatus_emb','Occupation_emb',
 
 ###############Train Embeddings 50 baseline ######################################################
 #[0.31105740891888395, 0.8560899207335887]
-[0.44659990448325987, 0.8505005834692929]
+# [0.44659990448325987, 0.8505005834692929]
 # epochs = 50
 # model_name = f'fun_{epochs}_EmbeddSource_15x15'
 #
@@ -94,14 +94,14 @@ weights = ['Workclass_emb','Education_emb','MaritalStatus_emb','Occupation_emb',
 #########################VGG16 + Dense Numerical || minmax (0,255)#################################3
 from keras.preprocessing.image import ImageDataGenerator
 embedding_model = '/home/piotr/data/test/models/fun_50_EmbeddSource.h5'
-epochs = 50
-model_name = f'picture_baseline_{epochs}_Embeding_VGG16andDense'
+epochs = 200
+model_name = f'picture_baseline_{epochs}_Embeding_CNNandDense_7'
 batch_size = 32
 X_train,X_test = experiment.dataload_minmaxall(categorical,numerical,embedding_model,weights)
 
 numerical_col = ['Age', 'EducationNum', 'CapitalGain', 'CapitalLoss', 'HoursWeek', 'Salary', 'Sex']
 pixels = [col for col in X_train.columns if col not in numerical_col]
-# X_train = dataproc.swith_merge(X_train, numerical_col)
+X_train = dataproc.swith_merge(X_train, numerical_col)
 X_train_pixels = X_train[pixels]
 X_train_numerical = X_train[numerical_col]
 X_test_pixels = X_test[pixels]
@@ -115,7 +115,7 @@ X_train_numerical = dataproc.to_numpy_data(X_train_numerical,X_train_numerical.c
 X_test_pixels = dataproc.to_numpy_data(X_test_pixels,X_test_pixels.columns)
 X_test_numerical = dataproc.to_numpy_data(X_test_numerical,X_test_numerical.columns)
 
-sh = 40
+sh = 50
 count_zeros = sh*sh-49#2500-49
 X_train_pixels = experiment.make_vgg_pic(X_train_pixels, count_zeros, sh, sh)
 X_test_pixels = experiment.make_vgg_pic(X_test_pixels, count_zeros, sh, sh)
@@ -130,11 +130,12 @@ transform = ImageDataGenerator(
     ,horizontal_flip=True
     ,vertical_flip=True
 )
-itr = imageGen = transform.flow(X_train_pixels,batch_size=32561)
+itr = imageGen = transform.flow(X_train_pixels,batch_size=65122)
 # print(X_train_pixels.shape)
 # print(imageGen)
 X_train_pixels = itr.next()
-model = modeler.model_VGG16_Dense(CNN_shape=(sh,sh,3),Dense_shape=(6,))
+# model = modeler.model_VGG16_Dense(CNN_shape=(sh,sh,3),Dense_shape=(6,))
+model = modeler.model_CNN_Dense_antyoverfeet(CNN_shape=(sh,sh,3),Dense_shape=(6,))
 model.fit([X_train_pixels,X_train_numerical],y_train,batch_size=batch_size,epochs=epochs)
 # model.fit_generator(
 #     transform.flow([imageGen,X_train_numerical],y_train,batch_size=1024)
@@ -143,10 +144,12 @@ model.fit([X_train_pixels,X_train_numerical],y_train,batch_size=batch_size,epoch
 # )
 modeler.evaluateFunModel([X_test_pixels,X_test_numerical],y_test,model,model_name)
 
+# check CNN1D ??????
 # check data agum on simpler CNN model
 # vGG6 freez layer - not train?
 # higher zoom range ? tune in ImageDataGEn hyperparamiters ?
 # check if adding corelation numbers into model would work ???
+# KFold / Stratified KFold
 
 
 

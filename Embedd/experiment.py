@@ -29,6 +29,7 @@ def dataload_minmaxall(categorical,numerical,embedding_model,weights):
 
     big_df = minmax_column(big_df, minmax_columns) # for 0,255 norm
     big_df = dataproc.minmax_column(big_df,numerical) # for 0,1 norm
+    # big_df = dataproc.swith_merge(big_df,numerical+exclude_cols) # DATA SWITH ##################################
     X_train = big_df.loc[big_df['type'] == 'train']
     X_test = big_df.loc[big_df['type'] == 'test']
     X_train = dataproc.remove_data(X_train, 'type')
@@ -38,9 +39,9 @@ def dataload_minmaxall(categorical,numerical,embedding_model,weights):
 
 def make_vgg_pic(numpy_array, howmany_z, a, b):
     import numpy as np
-    from keras.applications.vgg16 import  preprocess_input
-    from keras.preprocessing.image import img_to_array
-    from keras.preprocessing.image import save_img
+    # from keras.applications.vgg16 import  preprocess_input
+    # from keras.preprocessing.image import img_to_array
+    # from keras.preprocessing.image import save_img
     # zeros = np.zeros((numpy_array.shape[0], howmany_z)) # fill in with zeros to make picture
     fill = np.full((numpy_array.shape[0],howmany_z),255.)
     image = np.concatenate((numpy_array, fill),1)
@@ -62,7 +63,7 @@ def make_vgg_pic(numpy_array, howmany_z, a, b):
     # image_array = np.repeat(image_array,3,-1)#####????????
     # image = preprocess_input(image)
     # print(image_array[0].shape)
-    return image/255
+    return image/255.
 
 def img_save(numpy_array,ratio=1,stop=None):
     for index,single in enumerate(numpy_array):
