@@ -167,200 +167,211 @@ def dataload_minmaxall(categorical,embedding_model,weights):
     return X_train, X_test
 
 
-def fun_swithOFF(categorical, numerical, to_dict=True):
+def duplic_col(df,dup_no):
+    new_df = pd.DataFrame()
+    print(f'Starting columns = {len(df.columns)}')
+    for x in range(dup_no):
+        for col in df.columns:
+            new_df[f'{col}_{x}'] = df[col]
+        if (x+1)%10==0 and x!=0:
+            print(f'Run: {x+1}, Memory usage: {int(new_df.memory_usage().sum()/1000000)} MB, # Columns: {len(new_df.columns)}')
+    print(f'Final memory usage: {int(new_df.memory_usage().sum() / 1000000)} MB, # Columns: {len(new_df.columns)}')
+    return new_df
 
-    train,test = dataload_stage1(categorical,numerical,onehot=False)
+# def fun_swithOFF(categorical, numerical, to_dict=True):
+#
+#     train,test = dataload_stage1(categorical,numerical,onehot=False)
+#
+#     X_train, y_train = split_data(train, 'Salary')
+#     X_test, y_test = split_data(test, 'Salary')
+#
+#     if to_dict == True:
+#         X_train_dict = {col: to_numpy_data(X_train, col) for col in categorical}
+#         X_train_dict['Numerical'] = to_numpy_data(X_train, numerical)
+#
+#         X_test_dict = {col: to_numpy_data(X_test, col) for col in categorical}
+#         X_test_dict['Numerical'] = to_numpy_data(X_test, numerical)
+#
+#         return X_train_dict, y_train, X_test_dict, y_test
+#     else:
+#         return X_train, y_train, X_test, y_test
 
-    X_train, y_train = split_data(train, 'Salary')
-    X_test, y_test = split_data(test, 'Salary')
-
-    if to_dict == True:
-        X_train_dict = {col: to_numpy_data(X_train, col) for col in categorical}
-        X_train_dict['Numerical'] = to_numpy_data(X_train, numerical)
-
-        X_test_dict = {col: to_numpy_data(X_test, col) for col in categorical}
-        X_test_dict['Numerical'] = to_numpy_data(X_test, numerical)
-
-        return X_train_dict, y_train, X_test_dict, y_test
-    else:
-        return X_train, y_train, X_test, y_test
-
-def data_seq_swithOFF(categorical,numerical,numpyON = True,expandY = False):
-    # categorical = ['Workclass', 'Education', 'MaritalStatus', 'Occupation', 'Relationship', 'Race', 'Sex', 'Country']
-    # numerical = ['Age', 'EducationNum', 'CapitalGain', 'CapitalLoss', 'HoursWeek']
-
-    train, test = read_data()
-
-    train = remove_data(train, 'Id')
-    test = remove_data(test, 'Id')
-
-    train = labelencoder(train, categorical)
-    test = labelencoder(test, categorical)
-    train = labelencoder(train, ['Salary'])
-    test = labelencoder(test, ['Salary'])
-
-    train, test = minmax_column(train, test, numerical)
-    # test = minmax_column(test, numerical)
-
-    X_train, y_train = split_data(train, 'Salary')
-    X_test, y_test = split_data(test, 'Salary')
-    if numpyON:
-        X_train = to_numpy_data(X_train, X_train.columns)
-        X_test = to_numpy_data(X_test, X_test.columns)
-    if expandY:
-        y_train = y_train.append(y_train)
-        y_test = y_test.append(y_test)
-    return X_train,y_train.values, X_test, y_test.values
-
-def data_seq_swithON():
-    categorical = ['Workclass', 'Education', 'MaritalStatus', 'Occupation', 'Relationship', 'Race', 'Sex', 'Country']
-    numerical = ['Age', 'EducationNum', 'CapitalGain', 'CapitalLoss', 'HoursWeek']
-
-    train, test = read_data()
-
-    # print(train.head())
-
-    train = remove_data(train, 'Id')
-    test = remove_data(test, 'Id')
-
-    train = labelencoder(train, categorical)
-    test = labelencoder(test, categorical)
-    train = labelencoder(train, ['Salary'])
-    test = labelencoder(test, ['Salary'])
-
-    train = minmax_column(train, numerical)
-    test = minmax_column(test, numerical)
-
-    train = swith_merge(train, numerical)
-    test = swith_merge(test,numerical)
-
-    X_train, y_train = split_data(train, 'Salary')
-    X_test, y_test = split_data(test, 'Salary')
-
-    X_train = to_numpy_data(X_train, X_train.columns)
-    X_test = to_numpy_data(X_test, X_test.columns)
-
-    return X_train, y_train.values, X_test, y_test.values
-
-def data_func_swithON():
-    categorical = ['Workclass', 'Education', 'MaritalStatus', 'Occupation', 'Relationship', 'Race', 'Sex', 'Country']
-    numerical = ['Age', 'EducationNum', 'CapitalGain', 'CapitalLoss', 'HoursWeek']
-
-    train, test = read_data()
-
-    train = remove_data(train, 'Id')
-    test = remove_data(test, 'Id')
-
-    train = labelencoder(train, categorical)
-    test = labelencoder(test, categorical)
-    train = labelencoder(train, ['Salary'])
-    test = labelencoder(test, ['Salary'])
-
-    train = minmax_column(train, numerical)
-    test = minmax_column(test, numerical)
-
-    train = swith_merge(train, numerical)
-    # test = swith_merge(test,numerical)
-
-    X_train, y_train = split_data(train, 'Salary')
-    X_test, y_test = split_data(test, 'Salary')
-
-    X_train_dict= {col: to_numpy_data(X_train, [col]) for col in categorical}
-    X_train_dict['Numerical'] = to_numpy_data(X_train, numerical)
-
-    X_test_dict = {col: to_numpy_data(X_test, [col]) for col in categorical}
-    X_test_dict['Numerical'] = to_numpy_data(X_test, numerical)
-
-    return X_train_dict, y_train, X_test_dict, y_test
-
-def data_func_swithOFF(categorical,numerical,to_dict = True):
-    # categorical = ['Workclass', 'Education', 'MaritalStatus', 'Occupation', 'Relationship', 'Race', 'Sex', 'Country']
-    # numerical = ['Age', 'EducationNum', 'CapitalGain', 'CapitalLoss', 'HoursWeek']
-
-    train, test = read_data()
-    train = train.drop(axis=0, index=19609)  # delete Holand one row wich breaks encodes as it does not live in test
-    train = remove_data(train, 'Id')
-    test = remove_data(test, 'Id')
-
-    train = labelencoder(train, categorical)
-    test = labelencoder(test, categorical)
-    train = labelencoder(train, ['Salary'])
-    test = labelencoder(test, ['Salary'])
-
-    train, test = minmax_column(train,test, numerical)
-    # test = minmax_column(test, numerical)
-
-    X_train, y_train = split_data(train, 'Salary')
-    X_test, y_test = split_data(test, 'Salary')
-
-    if to_dict == True:
-        X_train_dict = {col: to_numpy_data(X_train, col) for col in categorical}
-        X_train_dict['Numerical'] = to_numpy_data(X_train, numerical)
-
-        X_test_dict = {col: to_numpy_data(X_test, col) for col in categorical}
-        X_test_dict['Numerical'] = to_numpy_data(X_test, numerical)
-
-        return X_train_dict, y_train.values, X_test_dict, y_test.values
-    else:
-        return X_train, y_train.values, X_test, y_test.values
-
-
-def data_func_swithONscaleROW():
-    categorical = ['Workclass', 'Education', 'MaritalStatus', 'Occupation', 'Relationship', 'Race', 'Sex', 'Country']
-    numerical = ['Age', 'EducationNum', 'CapitalGain', 'CapitalLoss', 'HoursWeek']
-
-    train, test = read_data()
-
-    train = remove_data(train, 'Id')
-    test = remove_data(test, 'Id')
-
-    train = labelencoder(train, categorical)
-    test = labelencoder(test, categorical)
-    train = labelencoder(train, ['Salary'])
-    test = labelencoder(test, ['Salary'])
-
-
-    train = minmax_column(train, numerical)
-    test = minmax_column(test, numerical)
-
-    train = swith_merge(train, numerical)
-    # test = swith_merge(test,numerical)
-    train = minmax_row(train, numerical)
-    test = minmax_row(test, numerical)
-
-    X_train, y_train = split_data(train, 'Salary')
-    X_test, y_test = split_data(test, 'Salary')
-
-    X_train_dict= {col: to_numpy_data(X_train, [col]) for col in categorical}
-    X_train_dict['Numerical'] = to_numpy_data(X_train, numerical)
-
-    X_test_dict = {col: to_numpy_data(X_test, [col]) for col in categorical}
-    X_test_dict['Numerical'] = to_numpy_data(X_test, numerical)
-
-    return X_train_dict, y_train, X_test_dict, y_test
-
-def dataframe_seq_swithOFF(categorical,numerical):
-    # categorical = ['Workclass', 'Education', 'MaritalStatus', 'Occupation', 'Relationship', 'Race', 'Sex', 'Country']
-    # numerical = ['Age', 'EducationNum', 'CapitalGain', 'CapitalLoss', 'HoursWeek']
-
-    train, test = read_data()
-    train = train.drop(axis=0, index=19609) # delete Holand one row wich breaks encodes as it does not live in test
-
-    train = remove_data(train, 'Id')
-    test = remove_data(test, 'Id')
-
-    train = labelencoder(train, categorical)
-    test = labelencoder(test, categorical)
-    train = labelencoder(train, ['Salary'])
-    test = labelencoder(test, ['Salary'])
-
-    train = minmax_column(train, numerical)
-    test = minmax_column(test, numerical)
-
-    X_train, y_train = split_data(train, 'Salary')
-    X_test, y_test = split_data(test, 'Salary')
-
-    return X_train,y_train, X_test, y_test
+# def data_seq_swithOFF(categorical,numerical,numpyON = True,expandY = False):
+#     # categorical = ['Workclass', 'Education', 'MaritalStatus', 'Occupation', 'Relationship', 'Race', 'Sex', 'Country']
+#     # numerical = ['Age', 'EducationNum', 'CapitalGain', 'CapitalLoss', 'HoursWeek']
+#
+#     train, test = read_data()
+#
+#     train = remove_data(train, 'Id')
+#     test = remove_data(test, 'Id')
+#
+#     train = labelencoder(train, categorical)
+#     test = labelencoder(test, categorical)
+#     train = labelencoder(train, ['Salary'])
+#     test = labelencoder(test, ['Salary'])
+#
+#     train, test = minmax_column(train, test, numerical)
+#     # test = minmax_column(test, numerical)
+#
+#     X_train, y_train = split_data(train, 'Salary')
+#     X_test, y_test = split_data(test, 'Salary')
+#     if numpyON:
+#         X_train = to_numpy_data(X_train, X_train.columns)
+#         X_test = to_numpy_data(X_test, X_test.columns)
+#     if expandY:
+#         y_train = y_train.append(y_train)
+#         y_test = y_test.append(y_test)
+#     return X_train,y_train.values, X_test, y_test.values
+#
+# def data_seq_swithON():
+#     categorical = ['Workclass', 'Education', 'MaritalStatus', 'Occupation', 'Relationship', 'Race', 'Sex', 'Country']
+#     numerical = ['Age', 'EducationNum', 'CapitalGain', 'CapitalLoss', 'HoursWeek']
+#
+#     train, test = read_data()
+#
+#     # print(train.head())
+#
+#     train = remove_data(train, 'Id')
+#     test = remove_data(test, 'Id')
+#
+#     train = labelencoder(train, categorical)
+#     test = labelencoder(test, categorical)
+#     train = labelencoder(train, ['Salary'])
+#     test = labelencoder(test, ['Salary'])
+#
+#     train = minmax_column(train, numerical)
+#     test = minmax_column(test, numerical)
+#
+#     train = swith_merge(train, numerical)
+#     test = swith_merge(test,numerical)
+#
+#     X_train, y_train = split_data(train, 'Salary')
+#     X_test, y_test = split_data(test, 'Salary')
+#
+#     X_train = to_numpy_data(X_train, X_train.columns)
+#     X_test = to_numpy_data(X_test, X_test.columns)
+#
+#     return X_train, y_train.values, X_test, y_test.values
+#
+# def data_func_swithON():
+#     categorical = ['Workclass', 'Education', 'MaritalStatus', 'Occupation', 'Relationship', 'Race', 'Sex', 'Country']
+#     numerical = ['Age', 'EducationNum', 'CapitalGain', 'CapitalLoss', 'HoursWeek']
+#
+#     train, test = read_data()
+#
+#     train = remove_data(train, 'Id')
+#     test = remove_data(test, 'Id')
+#
+#     train = labelencoder(train, categorical)
+#     test = labelencoder(test, categorical)
+#     train = labelencoder(train, ['Salary'])
+#     test = labelencoder(test, ['Salary'])
+#
+#     train = minmax_column(train, numerical)
+#     test = minmax_column(test, numerical)
+#
+#     train = swith_merge(train, numerical)
+#     # test = swith_merge(test,numerical)
+#
+#     X_train, y_train = split_data(train, 'Salary')
+#     X_test, y_test = split_data(test, 'Salary')
+#
+#     X_train_dict= {col: to_numpy_data(X_train, [col]) for col in categorical}
+#     X_train_dict['Numerical'] = to_numpy_data(X_train, numerical)
+#
+#     X_test_dict = {col: to_numpy_data(X_test, [col]) for col in categorical}
+#     X_test_dict['Numerical'] = to_numpy_data(X_test, numerical)
+#
+#     return X_train_dict, y_train, X_test_dict, y_test
+#
+# def data_func_swithOFF(categorical,numerical,to_dict = True):
+#     # categorical = ['Workclass', 'Education', 'MaritalStatus', 'Occupation', 'Relationship', 'Race', 'Sex', 'Country']
+#     # numerical = ['Age', 'EducationNum', 'CapitalGain', 'CapitalLoss', 'HoursWeek']
+#
+#     train, test = read_data()
+#     train = train.drop(axis=0, index=19609)  # delete Holand one row wich breaks encodes as it does not live in test
+#     train = remove_data(train, 'Id')
+#     test = remove_data(test, 'Id')
+#
+#     train = labelencoder(train, categorical)
+#     test = labelencoder(test, categorical)
+#     train = labelencoder(train, ['Salary'])
+#     test = labelencoder(test, ['Salary'])
+#
+#     train, test = minmax_column(train,test, numerical)
+#     # test = minmax_column(test, numerical)
+#
+#     X_train, y_train = split_data(train, 'Salary')
+#     X_test, y_test = split_data(test, 'Salary')
+#
+#     if to_dict == True:
+#         X_train_dict = {col: to_numpy_data(X_train, col) for col in categorical}
+#         X_train_dict['Numerical'] = to_numpy_data(X_train, numerical)
+#
+#         X_test_dict = {col: to_numpy_data(X_test, col) for col in categorical}
+#         X_test_dict['Numerical'] = to_numpy_data(X_test, numerical)
+#
+#         return X_train_dict, y_train.values, X_test_dict, y_test.values
+#     else:
+#         return X_train, y_train.values, X_test, y_test.values
+#
+#
+# def data_func_swithONscaleROW():
+#     categorical = ['Workclass', 'Education', 'MaritalStatus', 'Occupation', 'Relationship', 'Race', 'Sex', 'Country']
+#     numerical = ['Age', 'EducationNum', 'CapitalGain', 'CapitalLoss', 'HoursWeek']
+#
+#     train, test = read_data()
+#
+#     train = remove_data(train, 'Id')
+#     test = remove_data(test, 'Id')
+#
+#     train = labelencoder(train, categorical)
+#     test = labelencoder(test, categorical)
+#     train = labelencoder(train, ['Salary'])
+#     test = labelencoder(test, ['Salary'])
+#
+#
+#     train = minmax_column(train, numerical)
+#     test = minmax_column(test, numerical)
+#
+#     train = swith_merge(train, numerical)
+#     # test = swith_merge(test,numerical)
+#     train = minmax_row(train, numerical)
+#     test = minmax_row(test, numerical)
+#
+#     X_train, y_train = split_data(train, 'Salary')
+#     X_test, y_test = split_data(test, 'Salary')
+#
+#     X_train_dict= {col: to_numpy_data(X_train, [col]) for col in categorical}
+#     X_train_dict['Numerical'] = to_numpy_data(X_train, numerical)
+#
+#     X_test_dict = {col: to_numpy_data(X_test, [col]) for col in categorical}
+#     X_test_dict['Numerical'] = to_numpy_data(X_test, numerical)
+#
+#     return X_train_dict, y_train, X_test_dict, y_test
+#
+# def dataframe_seq_swithOFF(categorical,numerical):
+#     # categorical = ['Workclass', 'Education', 'MaritalStatus', 'Occupation', 'Relationship', 'Race', 'Sex', 'Country']
+#     # numerical = ['Age', 'EducationNum', 'CapitalGain', 'CapitalLoss', 'HoursWeek']
+#
+#     train, test = read_data()
+#     train = train.drop(axis=0, index=19609) # delete Holand one row wich breaks encodes as it does not live in test
+#
+#     train = remove_data(train, 'Id')
+#     test = remove_data(test, 'Id')
+#
+#     train = labelencoder(train, categorical)
+#     test = labelencoder(test, categorical)
+#     train = labelencoder(train, ['Salary'])
+#     test = labelencoder(test, ['Salary'])
+#
+#     train = minmax_column(train, numerical)
+#     test = minmax_column(test, numerical)
+#
+#     X_train, y_train = split_data(train, 'Salary')
+#     X_test, y_test = split_data(test, 'Salary')
+#
+#     return X_train,y_train, X_test, y_test
 
 
 

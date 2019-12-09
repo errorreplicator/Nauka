@@ -24,7 +24,7 @@ def dataload_minmaxall(categorical,numerical,embedding_model,weights):
     big_df = dataproc.labelencoder(big_df, categorical)
     big_df = dataproc.labelencoder(big_df, ['Salary'])
     big_df = dataproc.weights2df(big_df, embedding_model, weights, del_categ=True, normalize=False)
-    exclude_cols = ['type','Salary','Sex'] + numerical # do not use for 0,255 minmax normalization
+    exclude_cols = ['type','Salary','Sex'] + numerical # columns that are not use for 0,255 minmax normalization
     minmax_columns = [col for col in big_df.columns if col not in exclude_cols]
 
     big_df = minmax_column(big_df, minmax_columns) # for 0,255 norm
@@ -68,6 +68,7 @@ def make_vgg_pic(numpy_array, howmany_z, a, b):
 def img_save(numpy_array,ratio=1,stop=None):
     for index,single in enumerate(numpy_array):
         print(single)
+
         im = Image.fromarray(single)
         im = im.convert('RGB')
         im = im.resize((single.shape[0] * ratio, single.shape[1] * ratio))
@@ -75,7 +76,6 @@ def img_save(numpy_array,ratio=1,stop=None):
         if stop:
             if stop == index:
                 break
-
 
 
 

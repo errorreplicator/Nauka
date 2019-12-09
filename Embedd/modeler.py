@@ -485,23 +485,22 @@ def model_CNN_Dense_antyoverfeet(CNN_shape, Dense_shape):
 def model_VGG16_Dense(CNN_shape, Dense_shape):
     input_CNN = Input(CNN_shape)
     # VGG16_MODEL = VGG16(include_top=False,weights='imagenet')(input_CNN)
-    VGG16_MODEL = VGG16(include_top=False,weights='imagenet')(input_CNN)
+    VGG16_MODEL = VGG16(include_top=False)(input_CNN)
     model_VGG16 = Flatten()(VGG16_MODEL)
     model_VGG16 = Dense(1024, activation='relu')(model_VGG16)
     model_VGG16 = Dense(521, activation='relu')(model_VGG16)
     model_VGG16 = Dense(64, activation='relu')(model_VGG16)
-    model_VGG16 = Dense(2, activation='softmax')(model_VGG16)
+    # model_VGG16 = Dense(2, activation='softmax')(model_VGG16)
 
     input_Dense = Input(Dense_shape)
     # model_Dense = Dense(256,activation='relu')(input_Dense)
     model_Dense = Dense(128,activation='relu')(input_Dense)
     model_Dense = Dense(64,activation='relu')(model_Dense)
-    model_Dense = Dense(8, activation='relu')(model_Dense)
+    # model_Dense = Dense(8, activation='relu')(model_Dense)
     merge = concatenate([model_VGG16,model_Dense])
     intermid = Dense(4,activation='relu')(merge)
     output = Dense(1,activation='sigmoid')(intermid)
     model = Model(inputs = [input_CNN,input_Dense],output=output)
-
 
     model.compile(optimizer='adam',loss='binary_crossentropy',metrics=['accuracy'])
     return model
