@@ -1,6 +1,8 @@
 from sklearn.preprocessing import MinMaxScaler
 from Embedd import dataproc
 from PIL import Image
+import numpy as np
+
 def minmax_column(df_train,column_list):
     scaler = MinMaxScaler(feature_range=(0, 255))
     scaler.fit(df_train[column_list])
@@ -38,7 +40,6 @@ def dataload_minmaxall(categorical,numerical,embedding_model,weights):
     return X_train, X_test
 
 def make_vgg_pic(numpy_array, howmany_z, a, b):
-    import numpy as np
     # from keras.applications.vgg16 import  preprocess_input
     # from keras.preprocessing.image import img_to_array
     # from keras.preprocessing.image import save_img
@@ -65,14 +66,21 @@ def make_vgg_pic(numpy_array, howmany_z, a, b):
     # print(image_array[0].shape)
     return image/255.
 
-def img_save(numpy_array,ratio=1,stop=None):
+def img_save(numpy_array,y,catalog,ratio=1,stop=None):
     for index,single in enumerate(numpy_array):
-        print(single)
-
-        im = Image.fromarray(single)
+        # print(single.astype(np.uint8))
+        if index%1000==0:
+            print(index)
+        im = Image.fromarray(single.astype(np.uint8))
         im = im.convert('RGB')
         im = im.resize((single.shape[0] * ratio, single.shape[1] * ratio))
-        im.save(f'/home/piotr/data/test/img/{index}.png')
+        folder_flag = '0'
+        if y[index] == 0:
+            folder_flag = '0'
+        else:
+            folder_flag = '1'
+        im.save(f'/home/piotr/data/test/img/{catalog}/{folder_flag}/{index}.png')
+
         if stop:
             if stop == index:
                 break
