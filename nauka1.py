@@ -1,15 +1,24 @@
-import Quandl as qd
-import pandas as pd
+from PIL import Image
+from PIL import ImageFilter
+from matplotlib import pyplot as plt
+import cv2
+import numpy as np
+file = 'c:/1/barbara.jpg'
+file2 = 'c:/1/1.jpg'
 
-ds = qd.get("FMAC/HPI_AL", authtoken="_VC8mdqyTzENHcUoUxnu")
-# print(ds.head())
+img = cv2.imread(file)
+#768,448
+def auto_canny(image, sigma=0.33):
+    v = np.median(image)
+    # apply automatic Canny edge detection using the computed media
+    lower = int(max(0, (1.0 - sigma) * v))
+    upper = int(min(255, (1.0 + sigma) * v))
+    edged = cv2.Canny(image,lower,upper)
+    return edged
 
-web_data  = pd.read_html('https://simple.wikipedia.org/wiki/List_of_U.S._states')
+# img_edge = auto_canny(img)
+blure = cv2.blur(img,(20,20))
 
-web_table = web_data[0][0][1:]
+plt.imshow(blure)
 
-# print(web_table[0][0][1:])
-# print(ds.shape)
-
-for abbv in web_table:
-    print('FMAC/HPI_'+str(abbv))
+plt.show()

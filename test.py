@@ -1,20 +1,12 @@
-import numpy as np
-import pandas as pd
-from matplotlib import pyplot as plt
-import pandas as pd
-np.set_printoptions(linewidth=np.inf)
-np.random.seed(10)
-zm1 = np.random.randint(0,24*60*60,200)
-# print(zm1)
-# print(24*60*60)
-
-def rand_time(n):
-    sec = np.random.randint(0,24*60*60,n)
-    return sec
-df = pd.DataFrame()
-
-df['sec'] = rand_time(1000)
-
-df = df.sort_values('sec').reset_index(drop=True)
-print(df.head())
-print(np.pi).
+def ile(n):
+    for x in range(1,n+1):
+        if x == 1:
+            start = 1
+        if x%2 == 0:
+            start +=3
+        if x%2 != 0 and x>2:
+            start-=1
+        if x%12==0:
+            start-=9
+    print(start)
+ile(100)
