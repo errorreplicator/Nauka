@@ -1,24 +1,63 @@
-from PIL import Image
-from PIL import ImageFilter
-from matplotlib import pyplot as plt
-import cv2
-import numpy as np
-file = 'c:/1/barbara.jpg'
-file2 = 'c:/1/1.jpg'
+liczba = 20
+L1 = []
+L2 = []
+L3 = []
+L4 = []
 
-img = cv2.imread(file)
-#768,448
-def auto_canny(image, sigma=0.33):
-    v = np.median(image)
-    # apply automatic Canny edge detection using the computed media
-    lower = int(max(0, (1.0 - sigma) * v))
-    upper = int(min(255, (1.0 + sigma) * v))
-    edged = cv2.Canny(image,lower,upper)
-    return edged
+licznik = 1
+flaga = 1
+glowna, lista = [],[]
+for z in range(1,liczba+1):
+    lista.append(z)
+print(lista)
 
-# img_edge = auto_canny(img)
-blure = cv2.blur(img,(20,20))
+for x in range(1,liczba+1):
+    if x%4 != 0:
+        glowna.append(licznik)
+        # print(licznik)
+    if x%4==0:
+        licznik+=1
+        glowna.append(licznik)
+        # print(licznik)
+        licznik+=1
 
-plt.imshow(blure)
+print(glowna)
+print(45*'#')
+index = 0
+flaga_tablicy = 0
 
-plt.show()
+for y in glowna:
+    if index >= len(lista):
+        break
+    if flaga_tablicy >= 4: flaga_tablicy = 1
+    else:flaga_tablicy+=1
+
+    for z in range(y):
+        if flaga_tablicy == 1:
+            L1.append(lista[index])
+            index+=1
+            if index >= len(lista):
+                break
+
+        elif flaga_tablicy == 2:
+            L2.append(lista[index])
+            index+=1
+            if index >= len(lista):
+                break
+
+        elif flaga_tablicy == 3:
+            L3.append(lista[index])
+            index+=1
+            if index >= len(lista):
+                break
+        else:
+            L4.append(lista[index])
+            index += 1
+            if index >= len(lista):
+                break
+
+
+print(L1)
+print(L2)
+print(L3)
+print(L4)
