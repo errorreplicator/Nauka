@@ -1,21 +1,19 @@
-import numpy as np
-import pandas as pd
-np.set_printoptions(edgeitems=10)
-np.core.arrayprint._line_width = 180
-desired_width = 320
-pd.set_option('display.max_rows', 500)
-pd.set_option('display.max_columns', 14)
-pd.set_option('display.width', 200)
-from Embedd import dataproc,modeler
+from numpy.random import choice
+from collections import Counter
 
+probabils = []
+dania = ['hot-dog', 'pizza', 'hamburger']
+mc_chain = {'hot-dog':[0.5, 0.0, 0.5],'pizza':[0.7, 0.0, 0.3],'hamburger':[0.2, 0.6, 0.2]}
+start = mc_chain['hot-dog']
+n=100000
+for x in range(n):
+    if x%10000==0:print(x)
+    pick = choice(dania, 1, p=start)
+    start = mc_chain[pick[0]]
+    probabils.append(pick[0])
+    # print(pick[0])
+print(Counter(probabils))
+zlicz = Counter(probabils)
 
-train,test  = dataproc.read_data()
-
-sub_t = train.iloc[:10,:3]
-new_t = pd.DataFrame()
-print(sub_t)
-for x in range(4):
-    for col in sub_t.columns:
-        new_t[f'{col}_{x}'] = sub_t[col]
-
-print(new_t)
+for key, item in zlicz.items():
+    print(key,item, item/n)
